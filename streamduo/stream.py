@@ -1,15 +1,8 @@
 from auth import *
 import requests
-import json
 
-
-
-def get_oauth_token():
-    token_req_payload = {'grant_type': 'client_credentials'}
-    token_response = requests.post(AUTH_URL,
-        data=token_req_payload, verify=False, allow_redirects=False,
-        auth=(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET))
-    return token_response.json()
-
-
+def get_table_list():
+    table_response = requests.get(f"{ENDPOINT_BASE_URL}/stream/list", headers=get_header())
+    print(table_response)
+    return table_response.json()
 
