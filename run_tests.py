@@ -17,5 +17,7 @@ if options.local:
     print(f"Get Org by ID {organization.get_organization(auth_manager, new_org_id)}")
     updated_org = organization.add_user(auth_manager, new_org_id, 'steve2').text
     print(f"new org with addn user {updated_org}")
+    print(f"Delete org result: {organization.delete_organization(auth_manager, new_org_id)}")
+    print(f"Get Org by ID {organization.get_organization(auth_manager, new_org_id)}")
 else:
     exit()

@@ -13,7 +13,7 @@ def put_new_organization(auth_manager):
 def get_organization(auth_manager, organization_id):
     get_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/organization/{organization_id}",
                                    headers=auth_manager.header)
-    return get_response.json()
+    return get_response.content
 
 def add_user(auth_manager, organization_id, new_user):
     req = {
@@ -25,3 +25,8 @@ def add_user(auth_manager, organization_id, new_user):
                                  headers=auth_manager.header,
                                  json=req)
     return add_response
+
+def delete_organization(auth_manager, organization_id):
+    get_response = requests.delete(f"{auth_manager.ENDPOINT_BASE_URL}/organization/{organization_id}",
+                                   headers=auth_manager.header)
+    return get_response.text
