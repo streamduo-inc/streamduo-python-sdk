@@ -15,5 +15,7 @@ if options.local:
     new_org_id = organization.put_new_organization(auth_manager).text
     print(f"Create Organization check: {new_org_id}")
     print(f"Get Org by ID {organization.get_organization(auth_manager, new_org_id)}")
+    updated_org = organization.add_user(auth_manager, new_org_id, 'steve2').text
+    print(f"new org with addn user {updated_org}")
 else:
     exit()

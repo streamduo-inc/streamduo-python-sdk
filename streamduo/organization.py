@@ -5,15 +5,23 @@ def put_new_organization(auth_manager):
         'organizationDomain': 'dtps.io',
         'users': ['steve']
     }
-    table_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/organization",
+    put_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/organization",
                                    headers=auth_manager.header,
                                    json=org)
-    print("xxx")
-    print(table_response)
-    return table_response
+    return put_response
 
 def get_organization(auth_manager, organization_id):
-    table_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/organization/{organization_id}",
+    get_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/organization/{organization_id}",
                                    headers=auth_manager.header)
-    print(table_response.json())
-    return table_response
+    return get_response.json()
+
+def add_user(auth_manager, organization_id, new_user):
+    req = {
+      "organizationId": organization_id,
+      "userAction": "ADD",
+      "userId": new_user
+    }
+    add_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/organization/update",
+                                 headers=auth_manager.header,
+                                 json=req)
+    return add_response
