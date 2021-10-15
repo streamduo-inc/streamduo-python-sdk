@@ -14,6 +14,8 @@ def put_new_organization(auth_manager, orgDomain, user):
 def get_organization(auth_manager, organization_id):
     get_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/organization/{organization_id}",
                                    headers=auth_manager.header)
+    if len(get_response.content) == 0:
+        return None
     return json.loads(get_response.content)
 
 def add_user(auth_manager, organization_id, new_user):

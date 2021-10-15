@@ -16,15 +16,8 @@ if options.production:
 else:
     auth_manager.ENDPOINT_BASE_URL = "http://localhost:8080"
 
-#Create Stream
-new_stream_id = stream.put_stream(auth_manager, 'dtps.io to counter.io', new_org_id, counter_org_id)
-print(f"created stream {new_stream_id}")
-#get Stream
-print(f"Get Stream by ID {stream.get_stream(auth_manager, new_stream_id)}")
 
-print(f"ADD Cient ID as Consumer {stream.update_stream_client_id(auth_manager, new_stream_id, 'clientID1_consumer', 'CONSUMER', 'ADD')}")
-print(f"Get Stream by ID V2 {stream.get_stream(auth_manager, new_stream_id)}")
-print(f"REMOVE Client ID as Consumer {stream.update_stream_client_id(auth_manager, new_stream_id, 'clientID1_consumer', 'CONSUMER', 'REMOVE')}")
+
 
 #Delete Stream
 print (f"Delete Stream: {stream.delete_stream(auth_manager, new_stream_id)}")

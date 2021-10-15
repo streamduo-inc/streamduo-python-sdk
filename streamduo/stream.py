@@ -15,6 +15,8 @@ def put_stream(auth_manager, display_name, producer_org_id, consumer_org_id):
 def get_stream(auth_manager, stream_id):
     get_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}",
                                    headers=auth_manager.header)
+    if len(get_response.content) == 0:
+        return None
     return json.loads(get_response.content)
 
 def delete_stream(auth_manager, stream_id):
