@@ -16,8 +16,6 @@ if options.production:
 else:
     auth_manager.ENDPOINT_BASE_URL = "http://localhost:8080"
 
-#Create counterparty ORG
-counter_org_id = organization.put_new_organization(auth_manager)
 #Create Stream
 new_stream_id = stream.put_stream(auth_manager, 'dtps.io to counter.io', new_org_id, counter_org_id)
 print(f"created stream {new_stream_id}")

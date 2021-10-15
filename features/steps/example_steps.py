@@ -1,6 +1,8 @@
 from behave import given, when, then, step
 from streamduo import auth
-from streamduo import  organization
+from streamduo import organization
+from streamduo import stream
+
 @given('we are logged in')
 def step_impl(context):
     context.auth_manager = auth.AuthManager()
@@ -32,9 +34,17 @@ def add_user(context, user, org):
 
 @then('user {user} has been added to organization {org}')
 def check_user(context, user, org):
-    print(context.org_dict)
     assert user in context.org_dict[org]['users']
 
+@when('we create a stream named {name} with Producer {producer} and Consumer {consumer}')
+def create_stream(context, name, producer, consumer):
+    result = stream.put_stream(context.auth_manager, name, context.org_dict[producer]['organizationId'], context.org_dict[consumer]['organizationId'])
+    context.stream_dict = {}
+    context.stream_dict[name] = result
 
+@then('stream {stream} exists when queried')
+def get_stream(context, stream):
+    result = stream.get_stream(context.auth_manager, context.stream_dict[stream]['streamId'])
+    assert result['streamId'] == context.stream_dict[stream]['streamId']
 
 
