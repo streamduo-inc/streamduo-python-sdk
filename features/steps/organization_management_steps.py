@@ -8,6 +8,7 @@ def step_impl(context):
     context.auth_manager = auth.AuthManager()
     context.org_dict = {}
     context.stream_dict = {}
+    context.record_dict = {}
     #context.auth_manager.ENDPOINT_BASE_URL = "http://api.streamduo.com:8080"
     assert context.auth_manager is not None
 

@@ -16,9 +16,11 @@ Scenario Outline: Write to Stream
      And we ADD clientId client_id_2 on stream SuperStream as CONSUMER
      Then clientId client_id_1 exists in stream SuperStream as PRODUCER
      And clientId client_id_2 exists in stream SuperStream as CONSUMER
-     When we write <Payload> to stream SuperStream
+     When we write <RecordName> with payload <Payload> to stream SuperStream
+     Then we query the record <RecordName> in stream SuperStream and readStatus is FALSE
+     And we query the record <RecordName> in stream SuperStream and readStatus is TRUE
 
      Examples: Input Variables
-            |Payload                   |
-            |{"name": "Fred", "age":2} |
+            |RecordName |Payload                   |
+            |record01   |{"name": "Fred", "age":2} |
 
