@@ -62,11 +62,15 @@ def update_client_id(context, action, client_id, stream_name, role):
     if action not in ['ADD', 'REMOVE'] or role not in ['PRODUCER', 'CONSUMER']:
         exit()
     result = stream.update_stream_client_id(context.auth_manager, context.stream_dict[stream_name]['streamId'], client_id, role, action)
+    print("update_client_id")
+    print(result)
     context.stream_dict[stream_name]
 
 @then('clientId {client_id} exists in stream {stream_name} as {role}')
 def check_client_id(context, client_id, stream_name, role):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
+    print("check_client_id")
+    print(result)
     if role == 'PRODUCER':
         assert client_id in result['producerClientIds']
     elif role == 'CONSUMER':

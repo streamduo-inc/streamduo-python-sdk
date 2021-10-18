@@ -31,7 +31,7 @@ def update_stream_client_id(auth_manager, stream_id, client_id, role, action):
         'streamUpdateRequestAction': action
     }
     print(stream_update)
-    update_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/update",
+    update_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/update/users",
                                    headers=auth_manager.header,
                                    json=stream_update)
     return json.loads(update_response.content)
