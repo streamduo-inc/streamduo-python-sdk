@@ -22,3 +22,32 @@ def read_single_record(context, record_name, stream_name, expected_read_status):
     print(json.loads(result['dataPayload']))
     print(json.loads(result['dataPayload']) == context.record_dict[record_name]['dataPayload'])
     assert result['readStatus'].lower() == expected_read_status.lower()
+
+@when('we query all unread records in stream {stream_name}')
+def get_all_unread(context, stream_name):
+    print("Read all unread result")
+    context.query_result = record.get_all_unread_records(context.auth_manager,
+                               context.stream_dict[stream_name]['streamId'])
+    print(context.query_result)
+
+
+@then ('length of resultSet is {result_len}')
+def check_length_resultset(context, result_len):
+    assert len(context.query_result) == int(result_len)
+
+@then('record {record_name} is in resultSet')
+def check_record_in_resultset(context, record_name):
+    found = False
+    for r in context.query_result:
+        if r['recordId'] == context.record_dict[record_name]['recordId']:
+            found = True
+    assert found == True
+
+
+@then('record {record_name} is not in resultSet')
+def check_record_not_in_resultset(context, record_name):
+    found = False
+    for r in context.query_result:
+        if r['recordId'] == context.record_dict[record_name]['recordId']:
+            found = True
+    assert found == False
