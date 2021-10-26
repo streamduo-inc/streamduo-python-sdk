@@ -73,18 +73,20 @@ def check_client_id(context, client_id, stream_name, role):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
     print("check_client_id")
     print(result)
-    if role == 'PRODUCER':
-        assert client_id in result['producerClientIds']
-    elif role == 'CONSUMER':
-        assert client_id in result['consumerClientIds']
+    found = False
+    for permission in result['streamActorPermissionRecords']:
+        if permission['actorId'] == client_id and permission['actorRole'] == role:
+            found = True
+    assert found == True
 
 @then('clientId {client_id} does not exist in stream {stream_name} as {role}')
 def check_client_id_ne(context, client_id, stream_name, role):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
-    if role == 'PRODUCER':
-        assert client_id not in result['producerClientIds']
-    elif role == 'CONSUMER':
-        assert client_id not in result['consumerClientIds']
+    found = False
+    for permission in result['streamActorPermissionRecords']:
+        if permission['actorId'] == client_id and permission['actorRole'] == role:
+            found = True
+    assert found == False
 
 @when('we delete stream {stream_name}')
 def delete_stream(context, stream_name):
