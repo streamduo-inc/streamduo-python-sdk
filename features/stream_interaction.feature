@@ -9,7 +9,7 @@ Scenario Outline: Write to Stream and get single record
      Given we are logged in
      When we create an organization alpha.io with user squirrel
      And we create an organization beta.io with user bear
-     And we create a stream named SuperStream with Producer alpha.io and Consumer beta.io
+     And we create a stream named SuperStream
      Then stream SuperStream exists when queried
      When we ADD clientId client_id_1 on stream SuperStream as PRODUCER
      And we ADD clientId client_id_2 on stream SuperStream as CONSUMER
@@ -20,14 +20,15 @@ Scenario Outline: Write to Stream and get single record
      And we query the record <RecordName> in stream SuperStream and readStatus is TRUE
 
      Examples: Input Variables
-            |RecordName |Payload                   |
-            |record01   |{"name": "Fred", "age":2} |
+          |RecordName |Payload                   |
+          |record01   |{"name": "Fred", "age":2} |
+          |record02   |{"name": "Reggie", "stats": {"rbi": 75, "home runs": 32, "team": "New York"}}|
 
 Scenario: Write to Stream and get all unread
      Given we are logged in
      When we create an organization alpha.io with user squirrel
      And we create an organization beta.io with user bear
-     And we create a stream named SuperStream with Producer alpha.io and Consumer beta.io
+     And we create a stream named SuperStream
      And we ADD clientId client_id_1 on stream SuperStream as PRODUCER
      And we ADD clientId client_id_2 on stream SuperStream as CONSUMER
      And we write record01 with payload {"name": "Fred", "age":2} to stream SuperStream
@@ -40,3 +41,6 @@ Scenario: Write to Stream and get all unread
      And record record02 is in resultSet
      And record record03 is in resultSet
      And record record01 is not in resultSet
+     When we query all unread records in stream SuperStream
+     Then length of resultSet is 0
+

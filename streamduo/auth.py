@@ -6,7 +6,7 @@ class AuthManager:
         self.AUTH_CLIENT_ID = os.getenv("AUTH_CLIENT_ID")
         self.AUTH_CLIENT_SECRET = os.getenv("AUTH_CLIENT_SECRET")
         self.AUTH_URL = os.getenv("AUTH_URL")
-        self.ENDPOINT_BASE_URL = "http://localhost:8080"
+        self.ENDPOINT_BASE_URL = "http://localhost:8081"
         self.header = self.get_header()
 
     def get_oauth_token(self):

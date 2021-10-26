@@ -1,10 +1,8 @@
 import requests
 import json
-def put_stream(auth_manager, display_name, producer_org_id, consumer_org_id):
+def put_stream(auth_manager, display_name):
     stream = {
-        'displayName': display_name,
-        'producerOrganizationId': producer_org_id,
-        'consumerOrganizationId': consumer_org_id
+        'displayName': display_name
     }
 
     create_stream_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream",

@@ -48,13 +48,14 @@ def confirm_delete(context, org):
     result = organization.get_organization(context.auth_manager, context.org_dict[org]['organizationId'])
     assert result is None
 
-@when('we create a stream named {stream_name} with Producer {producer} and Consumer {consumer}')
-def create_stream(context, stream_name, producer, consumer):
-    result = stream.put_stream(context.auth_manager, stream_name, context.org_dict[producer]['organizationId'], context.org_dict[consumer]['organizationId'])
+@when('we create a stream named {stream_name}')
+def create_stream(context, stream_name):
+    result = stream.put_stream(context.auth_manager, stream_name)
     context.stream_dict[stream_name] = result
 
 @then('stream {stream_name} exists when queried')
 def get_stream(context, stream_name):
+    print(context.stream_dict)
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
     assert result['streamId'] == context.stream_dict[stream_name]['streamId']
 
