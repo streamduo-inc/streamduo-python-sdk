@@ -11,8 +11,8 @@ Scenario Outline: Write to Stream and get single record
      And we create an organization beta.io with user bear
      And we create a stream named SuperStream
      Then stream SuperStream exists when queried
-     When we ADD clientId client_id_1 on stream SuperStream as PRODUCER
-     And we ADD clientId client_id_2 on stream SuperStream as CONSUMER
+     When we create a new clientId named client_id_1 on our stream SuperStream as PRODUCER
+     And we create a new clientId named client_id_2 on our stream SuperStream as CONSUMER
      Then clientId client_id_1 exists in stream SuperStream as PRODUCER
      And clientId client_id_2 exists in stream SuperStream as CONSUMER
      When we write <RecordName> with payload <Payload> to stream SuperStream
@@ -29,8 +29,8 @@ Scenario: Write to Stream and get all unread
      When we create an organization alpha.io with user squirrel
      And we create an organization beta.io with user bear
      And we create a stream named SuperStream
-     And we ADD clientId client_id_1 on stream SuperStream as PRODUCER
-     And we ADD clientId client_id_2 on stream SuperStream as CONSUMER
+     And we create a new clientId named client_id_1 on our stream SuperStream as PRODUCER
+     And we create a new clientId named client_id_2 on our stream SuperStream as CONSUMER
      And we write record01 with payload {"name": "Fred", "age":2} to stream SuperStream
      And we write record02 with payload {"name": "John", "age":3} to stream SuperStream
      And we write record03 with payload {"name": "Ted", "age":4} to stream SuperStream
@@ -43,4 +43,11 @@ Scenario: Write to Stream and get all unread
      And record record01 is not in resultSet
      When we query all unread records in stream SuperStream
      Then length of resultSet is 0
+
+Scenario: Use New Client Id
+     Given we are logged in
+     When we create a stream named SuperStream
+     And we create a new clientId named SuperClient on our stream SuperStream as PRODUCER
+     Then clientId SuperClient exists in stream SuperStream as PRODUCER
+     Then we delete clientId named SuperClient
 

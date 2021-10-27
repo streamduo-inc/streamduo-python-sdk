@@ -2,6 +2,8 @@ from behave import given, when, then, step
 from streamduo import auth
 from streamduo import organization
 from streamduo import stream
+from streamduo import client
+
 
 @given('we are logged in')
 def step_impl(context):
@@ -9,6 +11,7 @@ def step_impl(context):
     context.org_dict = {}
     context.stream_dict = {}
     context.record_dict = {}
+    context.client_dict = {}
     #context.auth_manager.ENDPOINT_BASE_URL = "http://api.streamduo.com:8080"
     assert context.auth_manager is not None
 
@@ -59,15 +62,6 @@ def get_stream(context, stream_name):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
     assert result['streamId'] == context.stream_dict[stream_name]['streamId']
 
-@when('we {action} clientId {client_id} on stream {stream_name} as {role}')
-def update_client_id(context, action, client_id, stream_name, role):
-    if action not in ['ADD', 'REMOVE'] or role not in ['PRODUCER', 'CONSUMER']:
-        exit()
-    result = stream.update_stream_client_id(context.auth_manager, context.stream_dict[stream_name]['streamId'], client_id, role, action)
-    print("update_client_id")
-    print(result)
-    context.stream_dict[stream_name]
-
 @then('clientId {client_id} exists in stream {stream_name} as {role}')
 def check_client_id(context, client_id, stream_name, role):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
@@ -75,8 +69,11 @@ def check_client_id(context, client_id, stream_name, role):
     print(result)
     found = False
     for permission in result['streamActorPermissionRecords']:
-        if permission['actorId'] == client_id and permission['actorRole'] == role:
-            found = True
+        if permission['actorId'] == context.client_dict[client_id]['client_id']:
+            if permission['isProducer'] and role == 'PRODUCER':
+                found = True
+            if permission['isConsumer'] and role == 'CONSUMER':
+                found = True
     assert found == True
 
 @then('clientId {client_id} does not exist in stream {stream_name} as {role}')
@@ -84,7 +81,7 @@ def check_client_id_ne(context, client_id, stream_name, role):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
     found = False
     for permission in result['streamActorPermissionRecords']:
-        if permission['actorId'] == client_id and permission['actorRole'] == role:
+        if permission['actorId'] == context.client_dict[client_id]['client_id'] and permission['actorRole'] == role:
             found = True
     assert found == False
 
@@ -96,3 +93,14 @@ def delete_stream(context, stream_name):
 def confirm_stream_delete(context, stream_name):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
     assert result is None
+
+@when('we create a new clientId named {client_name} on our stream {stream_name} as {role}')
+def create_new_client_id(context, client_name, stream_name, role):
+    if role not in ['PRODUCER', 'CONSUMER']:
+        exit()
+    result = stream.add_new_client_id(context.auth_manager, client_name, context.stream_dict[stream_name]['streamId'], role)
+    context.client_dict[client_name] = result
+
+@then('we delete clientId named {client_name}')
+def delete_client(context, client_name):
+    client.delete_client(context.auth_manager, context.client_dict[client_name]['client_id'])

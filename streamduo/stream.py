@@ -13,6 +13,7 @@ def put_stream(auth_manager, display_name):
 def get_stream(auth_manager, stream_id):
     get_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}",
                                    headers=auth_manager.header)
+    print(get_response)
     if len(get_response.content) == 0:
         return None
     return json.loads(get_response.content)
@@ -22,14 +23,21 @@ def delete_stream(auth_manager, stream_id):
                                    headers=auth_manager.header)
     return get_response.text
 
-def update_stream_client_id(auth_manager, stream_id, client_id, role, action):
-    stream_update = {
-        'clientId': client_id,
-        'streamUpdateRequestRole': role,
-        'streamUpdateRequestAction': action
+def add_new_client_id(auth_manager, client_name, stream_id, role):
+    client_request = {
+        'clientName': client_name,
+        'description': "behave testing client",
+        'isNewClientRequest':True,
+        'isConsumer': False,
+        'isProducer': False
     }
-    print(stream_update)
-    update_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/update/users",
+    if role == 'PRODUCER':
+        client_request['isProducer'] = True
+    if role == 'CONSUMER':
+        client_request['isConsumer'] = True
+
+    create_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/add/client/new",
                                    headers=auth_manager.header,
-                                   json=stream_update)
-    return json.loads(update_response.content)
+                                   json=client_request)
+    return json.loads(create_response.content)
+

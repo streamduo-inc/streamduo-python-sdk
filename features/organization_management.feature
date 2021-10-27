@@ -21,14 +21,11 @@ Scenario: Create Organization and Manage Streams
      And we create an organization beta.io with user bear
      And we create a stream named SuperStream
      Then stream SuperStream exists when queried
-     When we ADD clientId client_id_1 on stream SuperStream as PRODUCER
-     And we ADD clientId client_id_2 on stream SuperStream as CONSUMER
-     And we ADD clientId client_id_3 on stream SuperStream as CONSUMER
+     When we create a new clientId named client_id_1 on our stream SuperStream as PRODUCER
+     And we create a new clientId named client_id_2 on our stream SuperStream as CONSUMER
+     And we create a new clientId named client_id_3 on our stream SuperStream as CONSUMER
      Then clientId client_id_1 exists in stream SuperStream as PRODUCER
      And clientId client_id_2 exists in stream SuperStream as CONSUMER
-     And clientId client_id_3 exists in stream SuperStream as CONSUMER
-     When we REMOVE clientId client_id_2 on stream SuperStream as CONSUMER
-     Then clientId client_id_2 does not exist in stream SuperStream as CONSUMER
      And clientId client_id_3 exists in stream SuperStream as CONSUMER
      When we delete stream SuperStream
      And we delete organization alpha.io
