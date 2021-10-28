@@ -18,6 +18,8 @@ Scenario Outline: Write to Stream and get single record
      When we write <RecordName> with payload <Payload> to stream SuperStream
      Then we query the record <RecordName> in stream SuperStream and readStatus is FALSE
      And we query the record <RecordName> in stream SuperStream and readStatus is TRUE
+     Then we delete clientId named client_id_1
+     And we delete clientId named client_id_2
 
      Examples: Input Variables
           |RecordName |Payload                   |
@@ -43,6 +45,8 @@ Scenario: Write to Stream and get all unread
      And record record01 is not in resultSet
      When we query all unread records in stream SuperStream
      Then length of resultSet is 0
+     Then we delete clientId named client_id_1
+     And we delete clientId named client_id_2
 
 Scenario: Use New Client Id
      Given we are logged in

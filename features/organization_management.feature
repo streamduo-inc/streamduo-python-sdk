@@ -30,6 +30,9 @@ Scenario: Create Organization and Manage Streams
      When we delete stream SuperStream
      And we delete organization alpha.io
      And we delete organization beta.io
+     Then we delete clientId named client_id_1
+     And we delete clientId named client_id_2
+     And we delete clientId named client_id_3
      Then the organization alpha.io does not exist when queried
      And the organization beta.io does not exist when queried
      And the stream SuperStream does not exist when queried
