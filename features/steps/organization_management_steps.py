@@ -3,11 +3,11 @@ from streamduo import auth
 from streamduo import organization
 from streamduo import stream
 from streamduo import client
-
+import os
 
 @given('we are logged in')
 def step_impl(context):
-    context.auth_manager = auth.AuthManager()
+    context.auth_manager = auth.AuthManager(os.getenv("AUTH_CLIENT_ID"), os.getenv("AUTH_CLIENT_SECRET"))
     context.org_dict = {}
     context.stream_dict = {}
     context.record_dict = {}
@@ -69,7 +69,7 @@ def check_client_id(context, client_id, stream_name, role):
     print(result)
     found = False
     for permission in result['streamActorPermissionRecords']:
-        if permission['actorId'] == context.client_dict[client_id]['client_id']:
+        if permission['actorDisplayName'] == client_id:
             if permission['isProducer'] and role == 'PRODUCER':
                 found = True
             if permission['isConsumer'] and role == 'CONSUMER':
@@ -81,7 +81,7 @@ def check_client_id_ne(context, client_id, stream_name, role):
     result = stream.get_stream(context.auth_manager, context.stream_dict[stream_name]['streamId'])
     found = False
     for permission in result['streamActorPermissionRecords']:
-        if permission['actorId'] == context.client_dict[client_id]['client_id'] and permission['actorRole'] == role:
+        if permission['actorDisplayName'] == client_id and permission['actorRole'] == role:
             found = True
     assert found == False
 
@@ -99,7 +99,11 @@ def create_new_client_id(context, client_name, stream_name, role):
     if role not in ['PRODUCER', 'CONSUMER']:
         exit()
     result = stream.add_new_client_id(context.auth_manager, client_name, context.stream_dict[stream_name]['streamId'], role)
-    context.client_dict[client_name] = result
+    for permission in result['streamActorPermissionRecords']:
+        if permission['actorDisplayName'] == client_name:
+            context.client_dict[client_name] = {}
+            context.client_dict[client_name]['client_id'] = permission['actorId']
+
 
 @then('we delete clientId named {client_name}')
 def delete_client(context, client_name):

@@ -2,15 +2,16 @@ import os
 import requests
 
 class AuthManager:
-    def __init__(self):
-        self.AUTH_CLIENT_ID = os.getenv("AUTH_CLIENT_ID")
-        self.AUTH_CLIENT_SECRET = os.getenv("AUTH_CLIENT_SECRET")
+    def __init__(self, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET ):
+        self.AUTH_CLIENT_ID = AUTH_CLIENT_ID
+        self.AUTH_CLIENT_SECRET = AUTH_CLIENT_SECRET
         self.AUTH_URL = os.getenv("AUTH_URL")
         self.ENDPOINT_BASE_URL = "http://localhost:8081"
         self.header = self.get_header()
 
     def get_oauth_token(self):
         print(self.AUTH_URL)
+        print(self.AUTH_CLIENT_ID)
         header = {'content-type': 'application/x-www-form-urlencoded'}
         token_req_payload = {'grant_type': 'client_credentials',
                              'client_id': self.AUTH_CLIENT_ID,
@@ -18,6 +19,7 @@ class AuthManager:
                              'audience': 'https://api.streamduo.com'}
         token_response = requests.post(self.AUTH_URL,
             data=token_req_payload, headers=header)
+        print(token_response)
         return token_response.json()
 
     def get_header(self):

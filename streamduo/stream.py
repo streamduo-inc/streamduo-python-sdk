@@ -25,9 +25,7 @@ def delete_stream(auth_manager, stream_id):
 
 def add_new_client_id(auth_manager, client_name, stream_id, role):
     client_request = {
-        'clientName': client_name,
-        'description': "behave testing client",
-        'isNewClientRequest':True,
+        'actorDisplayName': client_name,
         'isConsumer': False,
         'isProducer': False
     }

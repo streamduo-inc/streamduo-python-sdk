@@ -19,9 +19,8 @@ def read_single_record(context, record_name, stream_name, expected_read_status):
                               context.stream_dict[stream_name]['streamId'],
                               context.record_dict[record_name]['recordId'])
     print(result)
-    print(json.loads(result['dataPayload']))
-    print(json.loads(result['dataPayload']) == context.record_dict[record_name]['dataPayload'])
-    assert result['readStatus'].lower() == expected_read_status.lower()
+    print(result[0]['dataPayload'])
+    assert result[0]['readStatus'].lower() == expected_read_status.lower()
 
 @when('we query all unread records in stream {stream_name}')
 def get_all_unread(context, stream_name):
