@@ -4,16 +4,30 @@ import json
 
 def write_record(auth_manager, stream_id, payload):
     write_stream_record_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/record/",
-                                           headers=auth_manager.header,
+                                           headers=auth_manager.get_header(),
                                            json=payload)
     return json.loads(write_stream_record_response.content)
 
-def get_record(auth_manager, stream_id, record_id):
-    get_stream_record_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/record/{record_id}",
-                                                 headers=auth_manager.header)
+def get_single_record(auth_manager, stream_id, record_id):
+    payload = {
+    'readRecordRequestType': 'SINGLE',
+    'recordCount': '',
+    'recordId': record_id,
+    'markAsRead': 'true'
+    }
+    get_stream_record_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/record-request/",
+                                                 headers=auth_manager.header,
+                                                 json=payload)
     return json.loads(get_stream_record_response.content)
 
 def get_all_unread_records(auth_manager, stream_id):
-    get_stream_record_response = requests.get(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/record/unread",
-                                                 headers=auth_manager.header)
+    payload = {
+        'readRecordRequestType': 'UNREAD',
+        'recordCount': '',
+        'recordId': '',
+        'markAsRead': 'true'
+    }
+    get_stream_record_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/record-request/",
+                                                 headers=auth_manager.header,
+                                              json=payload)
     return json.loads(get_stream_record_response.content)

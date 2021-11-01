@@ -15,7 +15,7 @@ def write_record(context, record_name, payload, stream_name):
 
 @then('we query the record {record_name} in stream {stream_name} and readStatus is {expected_read_status}')
 def read_single_record(context, record_name, stream_name, expected_read_status):
-    result =record.get_record(context.auth_manager,
+    result =record.get_single_record(context.auth_manager,
                               context.stream_dict[stream_name]['streamId'],
                               context.record_dict[record_name]['recordId'])
     print(result)

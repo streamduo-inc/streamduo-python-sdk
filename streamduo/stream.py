@@ -29,13 +29,15 @@ def add_new_client_id(auth_manager, client_name, stream_id, role):
         'isConsumer': False,
         'isProducer': False
     }
+
     if role == 'PRODUCER':
         client_request['isProducer'] = True
     if role == 'CONSUMER':
         client_request['isConsumer'] = True
-
+    print(client_request)
     create_response = requests.post(f"{auth_manager.ENDPOINT_BASE_URL}/stream/{stream_id}/add/client/new",
                                    headers=auth_manager.header,
                                    json=client_request)
+    print(create_response)
     return json.loads(create_response.content)
 

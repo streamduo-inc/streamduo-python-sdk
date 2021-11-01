@@ -99,6 +99,8 @@ def create_new_client_id(context, client_name, stream_name, role):
     if role not in ['PRODUCER', 'CONSUMER']:
         exit()
     result = stream.add_new_client_id(context.auth_manager, client_name, context.stream_dict[stream_name]['streamId'], role)
+    print("----")
+    print(result)
     for permission in result['streamActorPermissionRecords']:
         if permission['actorDisplayName'] == client_name:
             context.client_dict[client_name] = {}

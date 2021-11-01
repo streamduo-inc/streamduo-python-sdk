@@ -4,14 +4,24 @@ from streamduo import record
 
 
 if __name__ == "__main__":
-    auth_manager = AuthManager("v3QzBbTSU3nJSXD3bRZxrMRlsR7cFQX7",
-                               "RTYCJcTHY-grd0sxKA1qxlcUWo-TxJfiORk6NKOg9vvU-ZR5HL_zOAU-sSy4YTTL")
+    auth_manager = AuthManager("",
+                               "")
+    auth_manager.get_header()
     payload = {"name": "Fred",
                "age":27,
                "stats": [{"home runs": 25},
                          {"runs": 43}],
                "position": "pitcher"
                }
-    stream = "f07e9891-645c-4a16-a99d-fead759107fb"
+    stream = "b29e979f-001d-4633-8d9a-dbb18b44c034"
     record.write_record(auth_manager, stream, payload)
+
+    payload = {"name": "Bob",
+               "age":27,
+               "stats": [{"home runs": 33},
+                         {"runs": 11}],
+               "position": "catcher"
+               }
+    record.write_record(auth_manager, stream, payload)
+
 
