@@ -33,6 +33,14 @@ class Record:
         read_record_request.recordCount = record_count
         return self._read_record_request(stream_id, read_record_request)
 
+    def read_records_since_timestamp(self, stream_id, timestamp, mark_as_read, record_count):
+        read_record_request = ReadRecordRequest()
+        read_record_request.readRecordRequestType = ReadRecordRequestType.READ_SINCE_TIMESTAMP
+        read_record_request.recordTimeStampISO = timestamp
+        read_record_request.markAsRead = mark_as_read
+        read_record_request.recordCount = record_count
+        return self._read_record_request(stream_id, read_record_request)
+
     def _read_record_request(self, stream_id, read_record_request):
         read_record_request.readRecordRequestType = read_record_request.readRecordRequestType.value
         return self.client.call_api("POST",
