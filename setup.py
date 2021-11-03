@@ -1,5 +1,5 @@
 
-from setuptools import setup, find_packages  # noqa: H301
+from setuptools import setup, find_packages
 
 NAME = "streamduo"
 VERSION = "0.0.9-alpha"
@@ -10,7 +10,7 @@ VERSION = "0.0.9-alpha"
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil"]
+REQUIRES = ["requests"]
 
 setup(
     name=NAME,
@@ -18,11 +18,11 @@ setup(
     description="streamduo.com API",
     author_email="steve@streamduo.com",
     url="",
-    keywords=["Swagger", "streamduo.com API"],
+    keywords=["streamduo.com API"],
     install_requires=REQUIRES,
     packages=find_packages(),
     include_package_data=True,
     long_description="""\
-    Swagger docs for streamduo.com  # noqa: E501
+    SDK for streamduo.com
     """
 )
