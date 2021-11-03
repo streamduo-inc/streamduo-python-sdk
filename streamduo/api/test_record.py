@@ -77,6 +77,46 @@ class TestRecord(TestCase):
         ## Cleanup
         stream_controller.delete_stream(stream_id)
 
+    def test_last_n_records(self):
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'),
+                                   os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+
+        record_controller = Client(os.getenv('AUTH_CLIENT_ID'),
+                                   os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+        payload_1 = {'payload': 1}
+
+        payload_2 = {'payload': 2}
+
+        payload_3 = {'payload': 3}
+
+        record_id_1 = record_controller.write_record(stream_id, payload_1).json()['recordId']
+        record_id_2 = record_controller.write_record(stream_id, payload_2).json()['recordId']
+        record_id_3 = record_controller.write_record(stream_id, payload_3).json()['recordId']
+
+        read_unread_response = record_controller.read_last_n_records(stream_id, False, 2)
+        assert len(read_unread_response.json()) == 2
+        record_list = []
+        for r in read_unread_response.json():
+            record_list.append(r['recordId'])
+        assert record_id_3 in record_list
+        assert record_id_2 in record_list
+        assert record_id_1 not in record_list
+
+        read_unread_response = record_controller.read_last_n_records(stream_id, False, 10)
+        assert len(read_unread_response.json()) == 3
+        record_list = []
+        for r in read_unread_response.json():
+            record_list.append(r['recordId'])
+        assert record_id_3 in record_list
+        assert record_id_2 in record_list
+        assert record_id_1 in record_list
+
+        ## Cleanup
+        stream_controller.delete_stream(stream_id)
+
     def test_write_record_errors(self):
         record_controller = Client(os.getenv('AUTH_CLIENT_ID'),
                                    os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
