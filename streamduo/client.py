@@ -2,6 +2,7 @@ import requests
 from streamduo.api.health import Health
 from streamduo.api.stream import Stream
 from streamduo.api.actor import Actor
+from streamduo.api.record import Record
 
 class Client:
     def __init__(self, client_id, client_secret):
@@ -47,3 +48,6 @@ class Client:
 
     def get_actor_controller(self):
         return Actor(self)
+
+    def get_record_controller(self):
+        return Record(self)
