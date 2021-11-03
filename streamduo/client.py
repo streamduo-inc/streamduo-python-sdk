@@ -1,6 +1,7 @@
 import requests
 from streamduo.api.health import Health
 from streamduo.api.stream import Stream
+from streamduo.api.actor import Actor
 
 class Client:
     def __init__(self, client_id, client_secret):
@@ -32,12 +33,17 @@ class Client:
         if verb == 'POST':
             return requests.post(f"{self.api_endpoint}{path}",
                                 headers=header,
-                                 json=body)
+                                json=body)
         if verb == 'DELETE':
             return requests.delete(f"{self.api_endpoint}{path}",
-                                headers=header)
+                                headers=header,
+                                json=body)
 
     def get_health_controller(self):
         return Health(self)
+
     def get_stream_controller(self):
         return Stream(self)
+
+    def get_actor_controller(self):
+        return Actor(self)
