@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 NAME = "streamduo"
-VERSION = "0.0.10"
+VERSION = "0.0.11"
 # To install the library, run the following
 #
 # python setup.py install

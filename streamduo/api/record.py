@@ -1,15 +1,19 @@
+import json
 from enum import Enum
 
 
-class Record:
+class RecordController:
 
     def __init__(self, client):
         self.client = client
 
-    def write_record(self, stream_id, json_payload):
+    def write_record(self, stream_id, json_payload, record_id=None):
+        record = Record()
+        record.recordId = record_id
+        record.dataPayload = json.dumps(json_payload)
         return self.client.call_api("POST",
                              f"/stream/{stream_id}/record/",
-                             body=json_payload
+                             body=record.to_json()
                              )
 
     def read_record(self, stream_id, record_id, mark_as_read):
@@ -17,6 +21,15 @@ class Record:
         read_record_request.recordId = record_id
         read_record_request.readRecordRequestType = ReadRecordRequestType.SINGLE
         read_record_request.markAsRead = mark_as_read
+        read_record_request.recordCount = 1
+        return self._read_record_request(stream_id, read_record_request)
+
+    def read_record_hist(self, stream_id, record_id, count, mark_as_read):
+        read_record_request = ReadRecordRequest()
+        read_record_request.recordId = record_id
+        read_record_request.readRecordRequestType = ReadRecordRequestType.SINGLE
+        read_record_request.markAsRead = mark_as_read
+        read_record_request.recordCount = count
         return self._read_record_request(stream_id, read_record_request)
 
     def read_unread_records(self, stream_id, mark_as_read, record_count):
@@ -67,3 +80,15 @@ class ReadRecordRequestType(Enum):
     READ_SINCE_TIMESTAMP = 'READ_SINCE_TIMESTAMP'
     SINGLE = 'SINGLE'
     LAST_N = 'LAST_N'
+
+
+class Record:
+
+     def __init__(self):
+         self.recordId = None
+         self.streamId = None
+         self.recordTimeStampISO = None
+         self.readStatus = None
+         self.dataPayload = None
+     def to_json(self):
+         return self.__dict__

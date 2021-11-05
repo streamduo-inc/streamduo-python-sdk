@@ -159,6 +159,36 @@ class TestRecord(TestCase):
         ## Cleanup
         stream_controller.delete_stream(stream_id)
 
+
+    def test_add_to_record_id(self):
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+
+        record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+        payload = {'data': 1}
+        write_response = record_controller.write_record(stream_id, payload)
+        record_id = write_response.json()['recordId']
+
+        #write again to same ID
+        payload = {'data': 2}
+        write_response2 = record_controller.write_record(stream_id, payload, record_id=record_id)
+
+        assert write_response2.json()['recordId'] == record_id
+
+        ##get a record ID returns 2
+        read_response = record_controller.read_record(stream_id, record_id, False)
+        assert len(read_response.json()) == 1
+        assert read_response.json()[0]['dataPayload']['data'] == 2
+
+        read_hist_response = record_controller.read_record_hist(stream_id=stream_id, record_id=record_id, count=3, mark_as_read=True)
+        assert len(read_hist_response.json()) == 2
+
+
+        ## Cleanup
+        stream_controller.delete_stream(stream_id)
+
     def test_write_record_errors(self):
         record_controller = Client(os.getenv('AUTH_CLIENT_ID'),
                                    os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
