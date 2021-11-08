@@ -8,7 +8,7 @@ class Client:
     def __init__(self, client_id, client_secret):
         """Constructor"""
         self.auth_endpoint = "https://login.streamduo.com/oauth/token"
-        self.api_endpoint = "https://api.streamduo.com"
+        self.api_endpoint = "http://localhost:8081"
 
         self.client_id = client_id
         self.client_secret = client_secret
