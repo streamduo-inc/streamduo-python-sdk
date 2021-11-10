@@ -8,7 +8,6 @@ class TestRecord(TestCase):
         display_name = 'test_stream'
         stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
         stream_request_result = stream_controller.create_stream(display_name)
-        print(stream_request_result.json())
         stream_id = stream_request_result.json()['streamId']
 
         record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
