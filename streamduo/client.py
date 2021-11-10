@@ -9,8 +9,7 @@ class Client:
     def __init__(self, client_id, client_secret):
         """Constructor"""
         self.auth_endpoint = "https://login.streamduo.com/oauth/token"
-        #self.api_endpoint = "https://api.streamduo.com"
-        self.api_endpoint = "http://localhost:8081"
+        self.api_endpoint = "https://api.streamduo.com"
 
         self.client_id = client_id
         self.client_secret = client_secret
@@ -41,18 +40,10 @@ class Client:
         if verb == 'POST':
             if files:
                 del header['content-type']
-                return requests.post(f"{self.api_endpoint}{path}",
-                                     headers=header,
-                                     files=files)
-
-            if isinstance(body, str):
-                return requests.post(f"{self.api_endpoint}{path}",
-                                     headers=header,
-                                     data=body)
-
             return requests.post(f"{self.api_endpoint}{path}",
-                                headers=header,
-                                json=body)
+                                 headers=header,
+                                 files=files,
+                                 json=body)
         if verb == 'DELETE':
             return requests.delete(f"{self.api_endpoint}{path}",
                                 headers=header,
