@@ -19,8 +19,8 @@ class RecordController:
                              body=record.to_json()
                              )
 
-    def write_csv_records(self, stream_id, file):
-        file_payload = {'file': open(file, 'rb')}
+    def write_csv_records(self, stream_id, file_stream):
+        file_payload = {'file': file_stream}
         return self.client.call_api("POST",
                              f"/stream/{stream_id}/record/batch-file",
                                     files=file_payload
