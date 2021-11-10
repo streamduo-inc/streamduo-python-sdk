@@ -26,8 +26,27 @@ class Stream:
                                     f"/stream/{stream_id}/permissions",
                                     body=body)
 
+    def add_user_to_stream(self, stream_id, user_email, is_producer=False, is_consumer=False):
+        body = {'actorDisplayName': user_email,
+                'isProducer': is_producer,
+                'isConsumer': is_consumer,
+                'actorType': 'USER'
+                }
+        return self.client.call_api('POST',
+                                    f"/stream/{stream_id}/permissions",
+                                    body=body)
+
     def remove_machine_client_from_stream(self, stream_id, client_id ):
-        body = {'actorId': client_id
+        body = {'actorId': client_id,
+                'actorType': 'CLIENT'
+                }
+        return self.client.call_api('DELETE',
+                                    f"/stream/{stream_id}/permissions",
+                                    body=body)
+
+    def remove_user_from_stream(self, stream_id, client_id ):
+        body = {'actorId': client_id,
+                'actorType': 'USER'
                 }
         return self.client.call_api('DELETE',
                                     f"/stream/{stream_id}/permissions",

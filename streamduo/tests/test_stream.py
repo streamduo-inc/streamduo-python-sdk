@@ -65,3 +65,46 @@ class TestStream(TestCase):
         actor_controller.delete_machine_client(new_client_id)
         stream_controller.delete_stream(new_stream_id)
         assert actor_controller.get_machine_client(new_client_id).status_code == 404
+
+    def test_cannot_delete_owner(self):
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
+
+        user_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_user_controller()
+        user_id = user_controller.get_user().json()['userId']
+        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, client_id=user_id)
+        assert remove_response.status_code == 403
+
+        ## Cleanup
+        stream_controller.delete_stream(new_stream_id)
+
+    def test_add_user(self):
+        display_name = 'test_stream'
+        user_email = "dev@frontend.com"
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
+        #Add a user to a stream
+        add_client_response = stream_controller.add_user_to_stream(stream_id=new_stream_id, user_email=user_email)
+        stream_response = stream_controller.get_stream(stream_id=new_stream_id)
+        user_id = None
+        for i in stream_response.json()['streamActorPermissionRecords']:
+            if i['actorDisplayName'] == user_email:
+                user_id = i['actorId']
+                break
+        assert user_id is not None
+
+        # Remove User
+        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, client_id=user_id)
+        stream_response2 = stream_controller.get_stream(stream_id=new_stream_id)
+
+        user_id = None
+        for i in stream_response2.json()['streamActorPermissionRecords']:
+            if i['actorDisplayName'] == user_email:
+                user_id = i['actorId']
+                break
+        assert user_id is None
+
+        ## Cleanup
+        stream_controller.delete_stream(new_stream_id)
+
