@@ -31,16 +31,19 @@ class Client:
             self.token = None
 
 
-    def call_api(self, verb, path, body=None):
+    def call_api(self, verb, path, body=None, files=None):
         header = {'authorization': f"Bearer {self.token}",
                 'content-type': 'application/json'}
         if verb == 'GET':
             return requests.get(f"{self.api_endpoint}{path}",
                                 headers=header)
         if verb == 'POST':
+            if files:
+                del header['content-type']
             return requests.post(f"{self.api_endpoint}{path}",
-                                headers=header,
-                                json=body)
+                                 headers=header,
+                                 files=files,
+                                 json=body)
         if verb == 'DELETE':
             return requests.delete(f"{self.api_endpoint}{path}",
                                 headers=header,
