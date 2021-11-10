@@ -10,10 +10,20 @@ class RecordController:
     def write_record(self, stream_id, json_payload, record_id=None):
         record = Record()
         record.recordId = record_id
-        record.dataPayload = json.dumps(json_payload)
+        if isinstance(json_payload, str):
+            record.dataPayload = json_payload
+        else:
+            record.dataPayload = json.dumps(json_payload)
         return self.client.call_api("POST",
                              f"/stream/{stream_id}/record/",
                              body=record.to_json()
+                             )
+
+    def write_csv_records(self, stream_id, file):
+        file_payload = {'file': open(file, 'rb')}
+        return self.client.call_api("POST",
+                             f"/stream/{stream_id}/record/batch-file",
+                                    files=file_payload
                              )
 
     def read_record(self, stream_id, record_id, mark_as_read):

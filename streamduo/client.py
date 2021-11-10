@@ -9,7 +9,8 @@ class Client:
     def __init__(self, client_id, client_secret):
         """Constructor"""
         self.auth_endpoint = "https://login.streamduo.com/oauth/token"
-        self.api_endpoint = "https://api.streamduo.com"
+        #self.api_endpoint = "https://api.streamduo.com"
+        self.api_endpoint = "http://localhost:8081"
 
         self.client_id = client_id
         self.client_secret = client_secret
@@ -31,13 +32,24 @@ class Client:
             self.token = None
 
 
-    def call_api(self, verb, path, body=None):
+    def call_api(self, verb, path, body=None, files=None):
         header = {'authorization': f"Bearer {self.token}",
                 'content-type': 'application/json'}
         if verb == 'GET':
             return requests.get(f"{self.api_endpoint}{path}",
                                 headers=header)
         if verb == 'POST':
+            if files:
+                del header['content-type']
+                return requests.post(f"{self.api_endpoint}{path}",
+                                     headers=header,
+                                     files=files)
+
+            if isinstance(body, str):
+                return requests.post(f"{self.api_endpoint}{path}",
+                                     headers=header,
+                                     data=body)
+
             return requests.post(f"{self.api_endpoint}{path}",
                                 headers=header,
                                 json=body)

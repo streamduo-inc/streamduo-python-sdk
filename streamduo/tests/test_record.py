@@ -2,6 +2,9 @@ from time import sleep
 from unittest import TestCase
 import os
 from streamduo.client import Client
+import pandas as pd
+import json
+from streamduo.api.record import Record
 
 class TestRecord(TestCase):
     def test_write_record(self):
@@ -17,6 +20,49 @@ class TestRecord(TestCase):
                    }
         write_response = record_controller.write_record(stream_id, payload)
         assert write_response.json()['dataPayload']['level_1b'] == 'some text'
+
+        ## Cleanup
+        stream_controller.delete_stream(stream_id)
+
+    def test_write_record_pandas(self):
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+
+        record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+
+        car_sales = pd.read_csv("car_sales.csv")
+        car_sales_json = car_sales.loc[0].to_json()
+
+        write_response = record_controller.write_record(stream_id, car_sales_json)
+
+        print(write_response.json())
+        assert write_response.status_code == 200
+
+        car_sales_dict = car_sales.loc[0].to_dict()
+
+        write_response2 = record_controller.write_record(stream_id, car_sales_dict)
+
+        print(write_response2.json())
+        assert write_response2.status_code == 200
+
+        ## Cleanup
+        stream_controller.delete_stream(stream_id)
+
+    def test_write_csv_records(self):
+        file = 'test_csv.csv'
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+
+        record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+        write_file_response = record_controller.write_csv_records(stream_id=stream_id, file=file)
+        assert write_file_response.text == "success"
+
+        read_records_response = record_controller.read_unread_records(stream_id=stream_id, mark_as_read=False, record_count=10)
+        assert len(read_records_response.json()) == 3
 
         ## Cleanup
         stream_controller.delete_stream(stream_id)
