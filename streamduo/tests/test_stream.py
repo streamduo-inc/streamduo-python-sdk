@@ -71,9 +71,9 @@ class TestStream(TestCase):
         stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
         new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
 
-        user_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_user_controller()
-        user_id = user_controller.get_user().json()['userId']
-        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, client_id=user_id)
+        actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+        user_id = actor_controller.get_user().json()['userId']
+        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, user_id=user_id)
         assert remove_response.status_code == 403
 
         ## Cleanup
@@ -95,7 +95,7 @@ class TestStream(TestCase):
         assert user_id is not None
 
         # Remove User
-        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, client_id=user_id)
+        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, user_id=user_id)
         stream_response2 = stream_controller.get_stream(stream_id=new_stream_id)
 
         user_id = None
