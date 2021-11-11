@@ -44,7 +44,7 @@ class Client:
                                            data=self.token_req_payload,
                                            headers=self.auth_req_header)
             self.token = token_response.json()['access_token']
-        except:
+        except KeyError:
             self.token = None
 
     def call_api(self, verb, path, body=None, files=None):
@@ -94,9 +94,13 @@ class Client:
     def get_actor_controller(self):
         """
         Provides an Actor controller to access /client endpoints.
-        :return:
+        :return: ActorController
         """
         return ActorController(self)
 
     def get_record_controller(self):
+        """
+        Provides a Record Controller to interact with reading/writing streams
+        :return: RecordController
+        """
         return RecordController(self)

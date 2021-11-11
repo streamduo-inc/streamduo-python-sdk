@@ -1,7 +1,7 @@
 class ActorController:
     """
-    Provides methods for interacting with the `/client` endpoints
-    Machine 'clients' are managed via this class
+    Provides methods for interacting with the `/client` and `/user` endpoints
+    Machine 'clients' and 'users' are managed via this class
     """
     def __init__(self, client):
         self.client = client
@@ -10,7 +10,7 @@ class ActorController:
         """
         Get the details of a machine client ID
         :param machine_client_id: (String) machine client ID
-        :return: (Requests Response) response of the API call, body will be a Client object
+        :return: (Requests Response) response of the API call, body will be a 'client' dict
         """
         return self.client.call_api('GET', f"/client/{machine_client_id}")
 
@@ -19,7 +19,7 @@ class ActorController:
         Creates a new machine client
         :param client_display_name: (String) Desired display name for client
         :param client_description: (String) Desired description for client
-        :return:  (Requests Response) response of the API call, body will be a Client object
+        :return:  (Requests Response) response of the API call, body will be a 'client' dict
         """
         body = {'clientDisplayName':client_display_name,
                 'clientDescription': client_description}
@@ -37,4 +37,8 @@ class ActorController:
                                     f"/client/{client_id}")
 
     def get_user(self):
+        """
+        Gets the details of a human user
+        :return: (Requests Response) response of the API call, body will be a 'user' dict
+        """
         return self.client.call_api('GET', "/user")
