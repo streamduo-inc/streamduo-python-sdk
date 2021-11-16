@@ -42,3 +42,10 @@ class ActorController:
         :return: (Requests Response) response of the API call, body will be a 'user' dict
         """
         return self.client.call_api('GET', "/user")
+
+    def create_user(self):
+        """
+        Gets the details of a human user
+        :return: (Requests Response) response of the API call, body will be a 'user' dict
+        """
+        return self.client.call_api('POST', "/user")

@@ -18,7 +18,7 @@ class Client:
         :param client_id: StreamDuo Client ID
         :param client_secret: StreamDuo Client Secret
         """
-        self.auth_endpoint = "https://login.streamduo.com/oauth/token"
+        self.auth_endpoint = "https://streamduo.us.auth0.com/oauth/token"
         if os.getenv('STREAMDUO_SDK_URL'):
             self.api_endpoint = os.getenv('STREAMDUO_SDK_URL')
         else:
@@ -46,6 +46,7 @@ class Client:
             self.token = token_response.json()['access_token']
         except KeyError:
             self.token = None
+            print(token_response.text)
 
     def call_api(self, verb, path, body=None, files=None):
         """

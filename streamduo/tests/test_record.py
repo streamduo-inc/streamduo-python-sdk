@@ -71,7 +71,7 @@ class TestRecord(TestCase):
         record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
         with open(file, 'rb') as file_stream:
             write_file_response = record_controller.write_csv_records(stream_id=stream_id, file_stream=file_stream)
-        assert write_file_response.text == "success"
+        assert write_file_response.json()['recordsWritten'] == 10
 
         read_records_response = record_controller.read_unread_records(stream_id=stream_id, mark_as_read=False, record_count=100)
         assert len(read_records_response.json()) == 10
