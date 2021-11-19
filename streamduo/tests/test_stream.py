@@ -5,7 +5,6 @@ from streamduo.client import Client
 
 class TestStream(TestCase):
 
-
     def test_create_stream(self):
         display_name = 'test_stream'
         stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
@@ -81,7 +80,7 @@ class TestStream(TestCase):
 
     def test_add_user(self):
         display_name = 'test_stream'
-        user_email = "dev@frontend.com"
+        user_email = "prod@streamduo.com"
         stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
         new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
         #Add a user to a stream
