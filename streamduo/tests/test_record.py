@@ -268,4 +268,3 @@ class TestRecord(TestCase):
         write_response = record_controller.write_record("madeupsstreamid", payload)
         assert write_response.status_code == 401
 
-

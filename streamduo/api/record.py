@@ -22,9 +22,9 @@ class RecordController:
         record = Record()
         record.recordId = record_id
         if isinstance(json_payload, str):
-            record.dataPayload = json_payload
+            record.dataPayload = json.loads(json_payload)
         else:
-            record.dataPayload = json.dumps(json_payload)
+            record.dataPayload = json_payload
         return self.client.call_api("POST",
                                     f"/stream/{stream_id}/record/",
                                     body=record.to_json()

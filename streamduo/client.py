@@ -46,7 +46,6 @@ class Client:
             self.token = token_response.json()['access_token']
         except KeyError:
             self.token = None
-            print(token_response.text)
 
     def call_api(self, verb, path, body=None, files=None):
         """
