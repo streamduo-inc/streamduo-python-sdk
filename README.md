@@ -44,4 +44,30 @@ for record in read_unread_response.json():
 See the [Docs](https://docs.streamduo.com/docs/python-sdk-installation) for full details on using the SDK.
 
 
+## Testing
+
+There are two types of tests:
+
+### 1. Unit tests
+
+`streamduo/tests/unit/*`
+
+Requires no authentication, uses a mocked `requests` library.
+
+### 2. Integration tests
+
+`streamduo/tests/integration/*`
+
+Requires client credentials stored as environment variables:
+
+'AUTH_CLIENT_ID'  
+'AUTH_CLIENT_SECRET'
+
+Optionally, when running against a development server, the API endpoint can be overridden by the presense of the environment variable:
+
+'STREAMDUO_SDK_URL'
+
+
+
+
 
