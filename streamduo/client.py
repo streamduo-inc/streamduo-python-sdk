@@ -6,23 +6,27 @@ from streamduo.api.stream import StreamController
 from streamduo.api.actor import ActorController
 from streamduo.api.record import RecordController
 
+
 class Client:
     """
     The Client Object manages authorization headers for API calls.
     controllers are generated from this Client Object, and are provided
     with the authorization support for their methods.
     """
+    auth_endpoint = "https://streamduo.us.auth0.com/oauth/token"
+    api_endpoint = "https://api.streamduo.com"
+
     def __init__(self, client_id, client_secret):
         """
         Constructor for Client object.
         :param client_id: StreamDuo Client ID
         :param client_secret: StreamDuo Client Secret
         """
-        self.auth_endpoint = "https://streamduo.us.auth0.com/oauth/token"
+        self.auth_endpoint = Client.auth_endpoint
         if os.getenv('STREAMDUO_SDK_URL'):
             self.api_endpoint = os.getenv('STREAMDUO_SDK_URL')
         else:
-            self.api_endpoint = "https://api.streamduo.com"
+            self.api_endpoint = Client.api_endpoint
 
         self.client_id = client_id
         self.client_secret = client_secret
@@ -89,7 +93,6 @@ class Client:
         :return:
         """
         return StreamController(self)
-
 
     def get_actor_controller(self):
         """
