@@ -38,14 +38,15 @@ class Client:
         self.token_req_payload = {'grant_type': 'client_credentials',
                                   'client_id': self.client_id,
                                   'client_secret': self.client_secret,
-                                  'scope': [self.scope]}
-        # self.set_oauth_token()
+                                  'scope': ''}
 
-    def set_oauth_token(self):
+    def set_oauth_token(self, scope):
         """
         Method to set the OAUTH token
         :return: None
         """
+        self.scope = scope
+        self.token_req_payload['scope'] = self.scope
         try:
             token_response = requests.post(self.auth_endpoint,
                                            data=self.token_req_payload,
@@ -87,9 +88,8 @@ class Client:
         Provides a health controller to access /health endpoints
         :return: HealthController
         """
-        if self.scope != Client.record_scope or self.token is None:
-            self.scope = Client.record_scope
-            self.set_oauth_token()
+        if self.scope != Client.stream_scope or self.token is None:
+            self.set_oauth_token(Client.stream_scope)
         return HealthController(self)
 
     def get_stream_controller(self):
@@ -99,8 +99,7 @@ class Client:
         :return:
         """
         if self.scope != Client.stream_scope or self.token is None:
-            self.scope = Client.stream_scope
-            self.set_oauth_token()
+            self.set_oauth_token(Client.stream_scope)
         return StreamController(self)
 
     def get_actor_controller(self):
@@ -109,8 +108,7 @@ class Client:
         :return: ActorController
         """
         if self.scope != Client.stream_scope or self.token is None:
-            self.scope = Client.stream_scope
-            self.set_oauth_token()
+            self.set_oauth_token(Client.stream_scope)
         return ActorController(self)
 
     def get_record_controller(self):
@@ -119,6 +117,5 @@ class Client:
         :return: RecordController
         """
         if self.scope != Client.record_scope or self.token is None:
-            self.scope = Client.record_scope
-            self.set_oauth_token()
+            self.set_oauth_token(Client.record_scope)
         return RecordController(self)
