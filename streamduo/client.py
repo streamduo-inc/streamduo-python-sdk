@@ -15,6 +15,8 @@ class Client:
     """
     auth_endpoint = "https://streamduo-auth.auth.us-east-1.amazoncognito.com/oauth2/token"
     api_endpoint = "https://api.streamduo.com"
+    stream_scope = "https://api.streamduo.com/manage:streams"
+    record_scope = "https://api.streamduo.com/read:records"
 
     def __init__(self, client_id, client_secret):
         """
@@ -23,6 +25,7 @@ class Client:
         :param client_secret: StreamDuo Client Secret
         """
         self.auth_endpoint = Client.auth_endpoint
+        self.scope = ''
         if os.getenv('STREAMDUO_SDK_URL'):
             self.api_endpoint = os.getenv('STREAMDUO_SDK_URL')
         else:
@@ -35,8 +38,8 @@ class Client:
         self.token_req_payload = {'grant_type': 'client_credentials',
                                   'client_id': self.client_id,
                                   'client_secret': self.client_secret,
-                                  'scope': ['https://api.streamduo.com/manage:streams']}
-        self.set_oauth_token()
+                                  'scope': [self.scope]}
+        # self.set_oauth_token()
 
     def set_oauth_token(self):
         """
@@ -84,6 +87,9 @@ class Client:
         Provides a health controller to access /health endpoints
         :return: HealthController
         """
+        if self.scope != Client.record_scope or self.token is None:
+            self.scope = Client.record_scope
+            self.set_oauth_token()
         return HealthController(self)
 
     def get_stream_controller(self):
@@ -92,6 +98,9 @@ class Client:
         :return: StreamController
         :return:
         """
+        if self.scope != Client.stream_scope or self.token is None:
+            self.scope = Client.stream_scope
+            self.set_oauth_token()
         return StreamController(self)
 
     def get_actor_controller(self):
@@ -99,6 +108,9 @@ class Client:
         Provides an Actor controller to access /client endpoints.
         :return: ActorController
         """
+        if self.scope != Client.stream_scope or self.token is None:
+            self.scope = Client.stream_scope
+            self.set_oauth_token()
         return ActorController(self)
 
     def get_record_controller(self):
@@ -106,4 +118,7 @@ class Client:
         Provides a Record Controller to interact with reading/writing streams
         :return: RecordController
         """
+        if self.scope != Client.record_scope or self.token is None:
+            self.scope = Client.record_scope
+            self.set_oauth_token()
         return RecordController(self)
