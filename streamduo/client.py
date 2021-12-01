@@ -35,7 +35,7 @@ class Client:
         self.token_req_payload = {'grant_type': 'client_credentials',
                                   'client_id': self.client_id,
                                   'client_secret': self.client_secret,
-                                  'scope': 'https://api.streamduo.com'}
+                                  'scope': ['https://api.streamduo.com/manage:streams']}
         self.set_oauth_token()
 
     def set_oauth_token(self):

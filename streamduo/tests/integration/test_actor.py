@@ -5,6 +5,12 @@ from streamduo.client import Client
 
 
 class TestActor(TestCase):
+
+    # def test_initialize(self):
+    #     actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+    #     actor_controller.create_user()
+
+
     def test_create_machine_client(self):
 
         actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
@@ -74,7 +80,7 @@ class TestActor(TestCase):
         # confirm client is null & perm not on stream anymore
         stream_response = stream_controller.get_stream(stream_id=new_stream_id)
         new_client_id = None
-        for i in add_client_response.json()['streamActorPermissionRecords']:
+        for i in stream_response.json()['streamActorPermissionRecords']:
             if i['actorDisplayName'] == client_display_name:
                 new_client_id = i['actorId']
                 break
