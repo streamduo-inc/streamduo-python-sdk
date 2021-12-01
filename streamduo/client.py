@@ -13,7 +13,7 @@ class Client:
     controllers are generated from this Client Object, and are provided
     with the authorization support for their methods.
     """
-    auth_endpoint = "https://streamduo.us.auth0.com/oauth/token"
+    auth_endpoint = "https://streamduo-auth.auth.us-east-1.amazoncognito.com/oauth2/token"
     api_endpoint = "https://api.streamduo.com"
 
     def __init__(self, client_id, client_secret):
@@ -35,7 +35,7 @@ class Client:
         self.token_req_payload = {'grant_type': 'client_credentials',
                                   'client_id': self.client_id,
                                   'client_secret': self.client_secret,
-                                  'audience': 'https://api.streamduo.com'}
+                                  'scope': 'https://api.streamduo.com'}
         self.set_oauth_token()
 
     def set_oauth_token(self):

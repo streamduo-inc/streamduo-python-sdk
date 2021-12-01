@@ -6,7 +6,9 @@ from streamduo.client import Client
 
 class TestActor(TestCase):
     def test_create_machine_client(self):
+
         actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+
         create_actor_response = actor_controller.create_machine_client("client display name test",
                                                                        "client description test")
         new_client_id = create_actor_response.json()['clientId']
@@ -52,6 +54,37 @@ class TestActor(TestCase):
         client_list_new = actor_controller.get_clients()
         assert len(client_list_new.json()) == 0
 
+    def test_delete_machine_client(self):
+        # create stream
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
+        # create client on stream
+        client_display_name = 'test_client'
+        add_client_response = stream_controller.add_new_machine_client_to_stream(new_stream_id, client_display_name)
+        ##get new client ID
+        new_client_id = None
+        for i in add_client_response.json()['streamActorPermissionRecords']:
+            if i['actorDisplayName'] == client_display_name:
+                new_client_id = i['actorId']
+                break
+        # delete client
+        actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+        actor_controller.delete_machine_client(new_client_id)
+        # confirm client is null & perm not on stream anymore
+        stream_response = stream_controller.get_stream(stream_id=new_stream_id)
+        new_client_id = None
+        for i in add_client_response.json()['streamActorPermissionRecords']:
+            if i['actorDisplayName'] == client_display_name:
+                new_client_id = i['actorId']
+                break
+        assert new_client_id is None
+
+
+        # cleanup
+        stream_controller.delete_stream(new_stream_id)
+        assert actor_controller.get_machine_client(new_client_id).status_code == 404
+
 
     # def test_too_many_machine_client(self):
     #     actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
@@ -74,12 +107,12 @@ class TestActor(TestCase):
     #                                                                    "client description test4")
     #     assert create_actor_response4.json()['message']  == "Max Number of Clients Exceeded"
 
-        #clear out list
-        client_list = actor_controller.get_clients()
-        for client in client_list.json():
-            print(client['clientId'])
-            actor_controller.delete_machine_client(client['clientId'])
-        client_list_new = actor_controller.get_clients()
-        assert len(client_list_new.json()) == 0
+        # #clear out list
+        # client_list = actor_controller.get_clients()
+        # for client in client_list.json():
+        #     print(client['clientId'])
+        #     actor_controller.delete_machine_client(client['clientId'])
+        # client_list_new = actor_controller.get_clients()
+        # assert len(client_list_new.json()) == 0
 
 
