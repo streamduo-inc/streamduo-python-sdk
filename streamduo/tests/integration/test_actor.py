@@ -17,7 +17,7 @@ class TestActor(TestCase):
 
         ## cleanup
         delete_response = actor_controller.delete_machine_client(new_client_id)
-        assert delete_response.status_code == 204
+        assert delete_response.status_code == 200
 
         ## check get
         get_response = actor_controller.get_machine_client(new_client_id)
