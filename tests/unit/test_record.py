@@ -31,7 +31,7 @@ class TestActor(TestCase):
         resp_record.dataPayload = payload
 
         # Mock
-        responses.add(responses.POST, f"{client.api_endpoint}/stream/{stream_id}/record/",
+        responses.add(responses.POST, f"{client.api_endpoint}/stream/{stream_id}/record",
                       json=resp_record.to_json(),
                       status=200)
 
