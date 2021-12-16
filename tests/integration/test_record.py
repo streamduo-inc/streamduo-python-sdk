@@ -1,7 +1,7 @@
 from time import sleep
 from unittest import TestCase
 import os
-from streamduo.client import Client
+from streamduo.client import Client, PublicClient
 import pandas as pd
 import json
 
@@ -267,4 +267,44 @@ class TestRecord(TestCase):
                    }
         write_response = record_controller.write_record("madeupsstreamid", payload)
         assert write_response.status_code == 401
+
+    def test_write_record_public(self):
+        display_name = 'test_stream'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+        ## Make public
+        client_display_name = 'test_client'
+        add_client_response = stream_controller.add_public_client_to_stream(stream_id=stream_id, client_display_name=client_display_name, is_producer=True)
+        ##get new client ID
+        new_client_id = None
+        for i in add_client_response.json()['streamActorPermissionRecords']:
+            if i['actorDisplayName'] == client_display_name:
+                new_client_id = i['actorId']
+                break
+        assert new_client_id is not None
+
+        ## public write
+        record_controller = PublicClient().get_record_controller()
+        payload = {'level_1a': [{'level_2a': 99},
+                               {'level_2b': 'wayne'}],
+                   'level_1b': 'some text'
+                   }
+        write_response = record_controller.write_record(stream_id, payload)
+        assert write_response.json()['dataPayload']['level_1b'] == 'some text'
+
+        ## Remove Public Client ID from stream permissions
+        remove_client_response = stream_controller.remove_machine_client_from_stream(stream_id, new_client_id)
+        check_client_id = None
+        for i in remove_client_response.json()['streamActorPermissionRecords']:
+            if i['actorDisplayName'] == client_display_name:
+                check_client_id = i['actorId']
+                break
+        assert check_client_id is None
+        assert len(remove_client_response.json()['streamActorPermissionRecords']) == 1
+
+        ## Cleanup
+        stream_controller.delete_stream(stream_id)
+
+
 
