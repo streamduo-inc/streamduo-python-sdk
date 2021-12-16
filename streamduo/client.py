@@ -31,14 +31,14 @@ class Client:
         else:
             self.api_endpoint = Client.api_endpoint
 
+
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = None
         self.auth_req_header = {'content-type': 'application/x-www-form-urlencoded'}
         self.token_req_payload = {'grant_type': 'client_credentials',
                                   'client_id': self.client_id,
-                                  'client_secret': self.client_secret,
-                                  'scope': ''}
+                                  'client_secret': self.client_secret}
 
     def set_oauth_token(self, scope):
         """
@@ -52,6 +52,7 @@ class Client:
                                            data=self.token_req_payload,
                                            headers=self.auth_req_header)
             self.token = token_response.json()['access_token']
+
         except KeyError:
             self.token = None
 

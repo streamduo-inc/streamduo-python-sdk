@@ -1,5 +1,8 @@
 import json
-from enum import Enum
+
+from streamduo.models.read_record_request import ReadRecordRequest
+from streamduo.models.record import Record
+from streamduo.models.record_request import ReadRecordRequestType
 
 
 class RecordController:
@@ -26,7 +29,7 @@ class RecordController:
         else:
             record.dataPayload = json_payload
         return self.client.call_api("POST",
-                                    f"/stream/{stream_id}/record/",
+                                    f"/stream/{stream_id}/record",
                                     body=record.to_json()
                                     )
 
@@ -134,56 +137,3 @@ class RecordController:
                                     )
 
 
-class ReadRecordRequest:
-    """
-    Class for creating read record request objects.
-    Creating the request with a class helps ensure that the request body
-    conforms to the requirements on the API side.
-    """
-
-    def __init__(self):
-        """
-         Constructor
-         """
-        self.readRecordRequestType = None
-        self.recordCount = None
-        self.recordId = None
-        self.markAsRead = None
-        self.recordTimeStampISO = None
-
-    @property
-    def to_json(self):
-        """
-         returns the class properties as a Dict
-         :return: (Dict) class properties
-         """
-        return self.__dict__
-
-
-class ReadRecordRequestType(Enum):
-    """
-    Enum class to ensure accuracy of read record request types
-    """
-    SAMPLE = 'SAMPLE'
-    UNREAD = 'UNREAD'
-    READ_SINCE_RECORD_ID = 'READ_SINCE_RECORD_ID'
-    READ_SINCE_TIMESTAMP = 'READ_SINCE_TIMESTAMP'
-    SINGLE = 'SINGLE'
-    LAST_N = 'LAST_N'
-
-
-class Record:
-    """
-    Class used to aid in the construction of record objects
-    Help ensure accuracy of object when sent to API
-    """
-
-    def __init__(self):
-        self.recordId = None
-        self.streamId = None
-        self.recordTimeStampISO = None
-        self.readStatus = None
-        self.dataPayload = None
-
-    def to_json(self):
-        return self.__dict__

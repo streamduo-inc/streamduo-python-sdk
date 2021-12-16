@@ -73,7 +73,7 @@ class TestStream(TestCase):
         actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
         user_id = actor_controller.get_user().json()['userId']
         remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, user_id=user_id)
-        assert remove_response.status_code == 403
+        assert remove_response.status_code == 401
 
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
