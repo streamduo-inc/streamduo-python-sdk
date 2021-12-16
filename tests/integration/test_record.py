@@ -305,9 +305,6 @@ class TestRecord(TestCase):
 
         ## Cleanup
         stream_controller.delete_stream(stream_id)
-        ## cleanup
-        ##actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
-        #delete_response = actor_controller.delete_machine_client(new_client_id)
-        #print(delete_response)
+
 
 
