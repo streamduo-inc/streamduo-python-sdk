@@ -99,3 +99,40 @@ class TestActor(TestCase):
 
         assert record_controller.write_record(stream_id=stream_id, json_payload=payload).status_code == 200
         assert record_controller.write_record(stream_id=stream_id, json_payload=payload).json()['dataPayload'] == payload
+
+    @responses.activate
+    def test_simple_read_unread_records(self):
+        responses.add(responses.POST, Client.auth_endpoint,
+                      json={'access_token': "fake-token"}, status=200)
+        client = Client("client_id", "client_secret")
+        record_controller = client.get_record_controller()
+        ## Setup
+        stream_id = "streamId001"
+
+        ## Response
+        response_list = []
+        resp_record = Record()
+        resp_record.recordId = "recordID1"
+        resp_record.dataPayload = {
+            'Part Description': 'Widget A',
+            'Price': 10.00,
+            'Inventory': 20000
+        }
+        response_list.append(resp_record)
+        resp_record = Record()
+        resp_record.recordId = "recordID2"
+        resp_record.dataPayload = {
+            'Part Description': 'Widget B',
+            'Price': 110.00,
+            'Inventory': 210000
+        }
+        response_list.append(resp_record)
+
+        # Mock
+        responses.add(responses.GET, f"{client.api_endpoint}/stream/{stream_id}/record/unread",
+                      json=[x.to_json() for x in response_list],
+                      status=200)
+
+        assert record_controller.simple_read_unread_records(stream_id=stream_id).status_code == 200
+        assert record_controller.simple_read_unread_records(stream_id=stream_id).json()[0][
+                   'recordId'] == "recordID1"

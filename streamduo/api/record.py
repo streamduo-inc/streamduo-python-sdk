@@ -33,8 +33,6 @@ class RecordController:
                                     body=record.to_json()
                                     )
 
-
-
     def write_csv_records(self, stream_id, file_stream):
         """
         Writes a CSV file of records to a stream.
@@ -94,6 +92,23 @@ class RecordController:
         read_record_request.markAsRead = mark_as_read
         read_record_request.recordCount = record_count
         return self._read_record_request(stream_id, read_record_request)
+
+    def simple_read_unread_records(self, stream_id, record_count=None):
+        """
+        Reads unread records from a stream, returning records in chronological order
+        from the last read record. Always marks as read.
+        :param stream_id: (String) Stream to read from
+        :param record_count: (Int) Optional: Number of records to read, will use server default when omitted.
+        :return: (Requests Response) API response, body will be LIST of Record object Dicts.
+        """
+        params = {}
+        if record_count:
+            params["count"] = record_count
+
+        return self.client.call_api("GET",
+                                    f"/stream/{stream_id}/record/unread",
+                                    params=params
+                                    )
 
     def read_last_n_records(self, stream_id, mark_as_read, record_count):
         """
