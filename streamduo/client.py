@@ -56,12 +56,13 @@ class Client:
         except KeyError:
             self.token = None
 
-    def call_api(self, verb, path, body=None, files=None):
+    def call_api(self, verb, path, params=None, body=None, files=None):
         """
         Generic function to call the SteamDuo APIs.
         Authorization and headers are managed prior to calling API.
         :param verb: HTTP Verb (GET, POST, DELETE)
         :param path: URL path excluding base URL (i.e. /stream)
+        :param params: dict of querystring params
         :param body: Body of request if one is used. This can be either a dict, or a JSON formatted String.
         :param files: A File Object of any file used in the API call.
         :return: Requests Response Object of the API call.
@@ -70,6 +71,7 @@ class Client:
                   'content-type': 'application/json'}
         if verb == 'GET':
             return requests.get(f"{self.api_endpoint}{path}",
+                                params=params,
                                 headers=header)
         if verb == 'POST':
             if files:
