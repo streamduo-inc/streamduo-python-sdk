@@ -13,7 +13,7 @@ class Client:
     controllers are generated from this Client Object, and are provided
     with the authorization support for their methods.
     """
-    auth_endpoint = "https://streamduo-auth.auth.us-east-1.amazoncognito.com/oauth2/token"
+    auth_endpoint = "https://streamduo-authentication.auth.us-east-1.amazoncognito.com/oauth2/token"
     api_endpoint = "https://api.streamduo.com"
     stream_scope = "https://api.streamduo.com/manage:streams"
     record_scope = "https://api.streamduo.com/read:records"
