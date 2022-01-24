@@ -197,14 +197,14 @@ class TestRecord(TestCase):
         assert record_id_2 in record_list
         assert record_id_1 not in record_list
 
-        read_unread_response3 = record_controller.read_last_n_records(stream_id, False, 10)
-        assert len(read_unread_response3.json()) == 3
-        record_list2 = []
-        for r in read_unread_response3.json():
-            record_list2.append(r['recordId'])
-        assert record_id_3 in record_list2
-        assert record_id_2 in record_list2
-        assert record_id_1 in record_list2
+        read_unread_response = record_controller.read_last_n_records(stream_id, False, 10)
+        assert len(read_unread_response.json()) == 3
+        record_list = []
+        for r in read_unread_response.json():
+            record_list.append(r['recordId'])
+        assert record_id_3 in record_list
+        assert record_id_2 in record_list
+        assert record_id_1 in record_list
 
         ## Cleanup
         stream_controller.delete_stream(stream_id)
