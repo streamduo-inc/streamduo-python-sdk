@@ -22,3 +22,13 @@ class SchemaController:
         return self.client.call_api('POST',
                                     "/schemas",
                                     body=request_body)
+
+    def delete_schema(self, schema_id, schema_version):
+        """
+        Deletes a Schema
+        :param schema_id: (STRING) Desired schema to delete
+        :param schema_version: (STRING) Desired version of schema to delete
+        :return: (Requests Response) Response from API call, Body of response is null.
+        """
+        return self.client.call_api('DELETE',
+                                    f"/schemas/{schema_id}/versions/{schema_version}")
