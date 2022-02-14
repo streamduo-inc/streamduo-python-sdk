@@ -6,6 +6,7 @@ from streamduo.validate import Validator
 
 
 class TestAvro(TestCase):
+
     def test_rec_local_schema(self):
         val = Validator()
         val.set_local_schema("unit/car_schema.json")
@@ -21,8 +22,16 @@ class TestAvro(TestCase):
         with self.assertRaises(jsonschema.exceptions.ValidationError):
             val.validate_record(inval_rec)
 
+    def test_bad_schema(self):
+        val = Validator()
+        with self.assertRaises(jsonschema.exceptions.SchemaError):
+            val.set_schema("asdf")
+
+
     def test_csv_local_schema(self):
         val = Validator()
         val.set_local_schema("unit/car_schema.json")
         assert val.validate_csv("integration/car_sales.csv")
+        with self.assertRaises(jsonschema.exceptions.ValidationError):
+            val.validate_csv("integration/car_sales_bad.csv")
 

@@ -2,6 +2,11 @@ import json
 import csv
 from jsonschema import validate, validators
 
+
+def validate_schema(schema):
+    return validators.Draft7Validator.check_schema(schema)
+
+
 class Validator:
     schema = None
     """
@@ -17,7 +22,11 @@ class Validator:
                 print(validators.Draft7Validator.check_schema(self.schema))
         except SyntaxError as error:
             raise
-        print(self.schema)
+
+    def set_schema(self, schema):
+                self.schema = schema
+                print(validators.Draft7Validator.check_schema(self.schema))
+
 
     def validate_record(self, record):
         return validate(record, self.schema) == None
