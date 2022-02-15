@@ -11,6 +11,7 @@
 		"Colour",
 		"Doors"
 	],
+	"additionalProperties": false,
 	"properties": {
 		"Make": {
 			"$id": "#root/Make",
@@ -35,7 +36,7 @@
 		"Odometer (KM)": {
 			"$id": "#root/Odometer (KM)",
 			"title": "Odometer (km)",
-			"type": "string",
+			"type": "number",
 			"default": "",
 			"examples": [
 				"31600"
