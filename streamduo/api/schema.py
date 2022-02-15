@@ -1,4 +1,4 @@
-from streamduo.validate import Validator, validate_schema
+from streamduo.validators.json_schema import validate_schema
 class SchemaController:
     """
     Class for managing interaction with the /schema endpoints

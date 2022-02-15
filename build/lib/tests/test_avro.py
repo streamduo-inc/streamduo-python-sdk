@@ -1,5 +1,5 @@
 from unittest import TestCase
-from streamduo.validate import Avro
+from streamduo.validators.json_schema import Avro
 
 
 class TestAvro(TestCase):

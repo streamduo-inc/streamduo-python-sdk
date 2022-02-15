@@ -7,7 +7,7 @@ def validate_schema(schema):
     return validators.Draft7Validator.check_schema(schema)
 
 
-class Validator:
+class JsonValidator:
     schema = None
     """
     Provides methods for validating records and files against a given AVRO schema
