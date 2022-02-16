@@ -8,7 +8,8 @@ requests = "*"
 pandas = "*"
 pylint = "*"
 jsonschema = "*"
-datagristle= "*"
+frictionless= "*"
+great_expectations = "*"
 
 [dev-packages]
 responses = "*"

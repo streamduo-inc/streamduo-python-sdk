@@ -4,7 +4,7 @@
  "fields": [
     {"name": "Make", "type": "string"},
     {"name": "Colour", "type": "string"},
-    {"name": "Odometer (KM)",  "type": "string"},
+    {"name": "Odometer (KM)",  "type": "int"},
     {"name": "Doors", "type": "string"},
     {"name": "Price", "type": "string"}
  ]
