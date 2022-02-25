@@ -1,5 +1,11 @@
 import json
+from enum import Enum
 
+
+class SchemaType(Enum):
+    JSON = 'JSON'
+    AVRO = 'AVRO'
+    GREAT_EXPECTATIONS = 'GREAT_EXPECTATIONS'
 
 class Schema:
     """

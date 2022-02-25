@@ -6,6 +6,7 @@ import jsonschema
 
 from streamduo.client import Client
 from streamduo.validators.json_schema import JsonValidator
+from streamduo.models.schema import SchemaType
 
 class TestStream(TestCase):
 
@@ -22,13 +23,15 @@ class TestStream(TestCase):
         schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
         with open("car_schema.json", 'r') as file:
             car_schema = json.load(file)
-        create_schema_response1 = schema_controller.create_schema(stream_id=stream_id, schema=car_schema, schema_type="JSON")
+        create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
+                                                                  schema=car_schema, schema_type=SchemaType.JSON)
         new_schema_id = create_schema_response1.json()['schemaId']
         assert new_schema_id is not None
 
         ## BAD Schema errors out
         car_schema['properties']['Make']['$id'] = "#root/Make 2"
-        create_schema_response2 = schema_controller.create_schema(stream_id=stream_id, schema=car_schema, schema_type="JSON")
+        create_schema_response2 = schema_controller.create_schema(stream_id=stream_id,
+                                                                  schema=car_schema, schema_type=SchemaType.JSON)
         assert create_schema_response2.status_code == 400
 
         ## cleanup schema
@@ -52,7 +55,8 @@ class TestStream(TestCase):
         schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
         with open("car_schema.json", 'r') as file:
             car_schema = json.load(file)
-        create_schema_response1 = schema_controller.create_schema(stream_id=stream_id, schema=car_schema, schema_type="JSON")
+        create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
+                                                                  schema=car_schema, schema_type=SchemaType.JSON)
         new_schema_id = create_schema_response1.json()['schemaId']
         assert new_schema_id is not None
 
