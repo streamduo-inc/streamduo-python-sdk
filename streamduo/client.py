@@ -5,6 +5,7 @@ from streamduo.api.health import HealthController
 from streamduo.api.stream import StreamController
 from streamduo.api.actor import ActorController
 from streamduo.api.record import RecordController
+from streamduo.api.schema import SchemaController
 
 
 class Client:
@@ -122,6 +123,15 @@ class Client:
         if self.scope != Client.record_scope or self.token is None:
             self.set_oauth_token(Client.record_scope)
         return RecordController(self)
+
+    def get_schema_controller(self):
+        """
+        Provides a Schema Controller to interact with schema endpoints
+        :return: SchemaController
+        """
+        if self.scope != Client.stream_scope or self.token is None:
+            self.set_oauth_token(Client.record_scope)
+        return SchemaController(self)
 
 
 class PublicClient:

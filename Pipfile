@@ -7,6 +7,9 @@ name = "pypi"
 requests = "*"
 pandas = "*"
 pylint = "*"
+jsonschema = "*"
+frictionless= "*"
+great_expectations = "*"
 
 [dev-packages]
 responses = "*"

@@ -1,0 +1,18 @@
+{
+  "encoding": "utf-8",
+  "format": "csv",
+  "dialect": {
+    "delimiter": ",",
+    "doubleQuote": true
+  },
+ "name": "cars",
+  "path": "",
+ "profile": "tabular-data-resource",
+ "schema": {"fields": [
+    {"name": "Make", "type": "string"},
+    {"name": "Colour", "type": "string"},
+    {"name": "Odometer (KM)",  "type": "integer"},
+    {"name": "Doors", "type": "string"},
+    {"name": "Price", "type": "string"}
+ ]},
+ "scheme": "file"}
