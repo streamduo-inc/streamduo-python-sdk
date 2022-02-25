@@ -130,7 +130,7 @@ class Client:
         :return: SchemaController
         """
         if self.scope != Client.stream_scope or self.token is None:
-            self.set_oauth_token(Client.stream_scope)
+            self.set_oauth_token(Client.record_scope)
         return SchemaController(self)
 
 

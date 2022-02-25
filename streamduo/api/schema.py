@@ -1,4 +1,7 @@
 from streamduo.validators.json_schema import validate_schema
+from streamduo.models.schema import Schema
+
+
 class SchemaController:
     """
     Class for managing interaction with the /schema endpoints
@@ -29,8 +32,21 @@ class SchemaController:
         """
         Deletes a Schema
         :param schema_id: (STRING) Desired schema to delete
-        :param schema_version: (STRING) Desired version of schema to delete
+        :param stream_id: (STRING) Desired stream of schema to delete
         :return: (Requests Response) Response from API call, Body of response is null.
         """
         return self.client.call_api('DELETE',
                                     f"/streams/{stream_id}/schemas/{schema_id}/")
+
+    def get_schema(self, stream_id, schema_id):
+        """
+        Gets a Schema
+        :param schema_id: (STRING) Desired schema to get
+        :param stream_id: (STRING) Desired stream of schema to delete
+        :return: (Requests Response) Response from API call, Body of response is null.
+        """
+        resp = self.client.call_api('GET',
+                                    f"/streams/{stream_id}/schemas/{schema_id}/")
+        schema = Schema(**resp.json())
+        return schema
+
