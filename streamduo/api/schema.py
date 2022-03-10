@@ -43,10 +43,22 @@ class SchemaController:
         Gets a Schema
         :param schema_id: (STRING) Desired schema to get
         :param stream_id: (STRING) Desired stream of schema to delete
-        :return: (Requests Response) Response from API call, Body of response is null.
+        :return: (Requests Response) Response from API call.
         """
         resp = self.client.call_api('GET',
                                     f"/streams/{stream_id}/schemas/{schema_id}/")
         schema = Schema(**resp.json())
         return schema
+
+    def set_active_schema(self, stream_id, schema_id):
+        """
+        Sets the active schema on a stream
+        :param stream_id: Desired stream to set Schema to
+        :param schema_id: Desired schema ID to set active
+        :return: (Requests Response) Response from API call.
+        """
+        request_body = {"schemaId": schema_id}
+        return self.client.call_api('POST',
+                                    f"/stream/{stream_id}/schemas/active",
+                                    body=request_body)
 
