@@ -71,7 +71,7 @@ class TestStream(TestCase):
         valid_rec = {
             "Make": "Nissan",
             "Price": "$9,700.00",
-            "Odometer (KM)": "31600",
+            "Odometer (KM)": 31600,
             "Colour": "White",
             "Doors": "4"
         }
@@ -80,7 +80,7 @@ class TestStream(TestCase):
         bad_rec = {
             "Make": "Nissan",
             "Price": "$9,700.00",
-            "Odometer (KM)": "31600",
+            "Odometer (KM)": 31600,
             "Colour": "White"
         }
         with self.assertRaises(jsonschema.exceptions.ValidationError):

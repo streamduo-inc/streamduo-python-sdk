@@ -52,24 +52,18 @@
       "kwargs": {
         "column": "Odometer (KM)",
         "type_list": [
-          "FLOAT",
-          "DOUBLE",
-          "FLOAT4",
-          "FLOAT8",
-          "DOUBLE_PRECISION",
-          "NUMERIC",
-          "FloatType",
-          "DoubleType",
-          "float_",
-          "float16",
-          "float32",
-          "float64",
-          "number",
-          "DECIMAL",
           "int64"
         ]
       },
       "meta": {}
+    },
+     {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "Doors",
+        "min_value": 2,
+        "max_value":5
+      }
     }
-    ]
+  ]
   }

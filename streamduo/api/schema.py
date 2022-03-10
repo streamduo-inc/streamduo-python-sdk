@@ -23,7 +23,7 @@ class SchemaController:
         """
         validate_schema(schema)
         request_body = {'schema': schema,
-                        'schemaType': schema_type}
+                        'schemaType': schema_type.value}
         return self.client.call_api('POST',
                                     f"/streams/{stream_id}/schemas",
                                     body=request_body)

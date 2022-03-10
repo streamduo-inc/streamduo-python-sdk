@@ -34,12 +34,12 @@
 		},
 		"Odometer (KM)": {
 			"title": "Odometer (km)",
-			"type": "string",
-			"default": "",
+			"type": "number",
+			"minimum": 0,
+			"maximum": 999999,
 			"examples": [
 				"31600"
-			],
-			"pattern": "^.*$"
+			]
 		},
 		"Colour": {
 			"$id": "#root/Colour",
