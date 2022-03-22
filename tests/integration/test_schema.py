@@ -93,3 +93,74 @@ class TestStream(TestCase):
         ## Cleanup stream
         delete_response_stream = stream_controller.delete_stream(stream_request_result.json()['streamId'])
         assert delete_response_stream.status_code == 204
+
+    def test_set_active_schema(self):
+        ##create a stream
+        display_name = 'test_set_active_schema'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+        assert stream_request_result.json()['displayName'] == display_name
+
+        ## Add schema to stream
+        schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+        with open("car_schema.json", 'r') as file:
+            car_schema = json.load(file)
+        create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
+                                                                  schema=car_schema, schema_type=SchemaType.JSON)
+        new_schema_id = create_schema_response1.json()['schemaId']
+        assert new_schema_id is not None
+
+        ## Set new Schema active
+        set_active_response = schema_controller.set_active_schema(stream_id=stream_id, schema_id=new_schema_id)
+        assert set_active_response.json()['status'] == "Success"
+
+        updated_stream = stream_controller.get_stream(stream_id=stream_id).json()
+        assert updated_stream['activeSchemaId'] == new_schema_id
+
+    def test_set_active_schema_w_record(self):
+        ##create a stream
+        display_name = 'test_set_active_schema'
+        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_request_result = stream_controller.create_stream(display_name)
+        stream_id = stream_request_result.json()['streamId']
+        assert stream_request_result.json()['displayName'] == display_name
+
+        ## Add schema to stream
+        schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+        with open("car_schema.json", 'r') as file:
+            car_schema = json.load(file)
+        create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
+                                                                  schema=car_schema, schema_type=SchemaType.JSON)
+        new_schema_id = create_schema_response1.json()['schemaId']
+        assert new_schema_id is not None
+
+        ## Set new Schema active
+        set_active_response = schema_controller.set_active_schema(stream_id=stream_id, schema_id=new_schema_id)
+        assert set_active_response.json()['status'] == "Success"
+
+        updated_stream = stream_controller.get_stream(stream_id=stream_id).json()
+        assert updated_stream['activeSchemaId'] == new_schema_id
+
+        ## Send good record
+        record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+        good_record = {
+            "Make": "Nissan",
+            "Price": "$9,700.00",
+            "Odometer (KM)": 31600,
+            "Colour": "White",
+            "Doors": "4"
+        }
+        good_write_result = record_controller.write_record(stream_id=stream_id, json_payload=good_record)
+        assert good_write_result.status_code == 200
+
+        bad_record = {
+            "Make": "Nissan",
+            "Price": "$9,700.00",
+            "Odometer (KM)": 31600,
+            "Colour": "White",
+            "Doors": 4
+        }
+        bad_write_result = record_controller.write_record(stream_id=stream_id, json_payload=bad_record)
+        assert bad_write_result.status_code == 422
+
