@@ -14,3 +14,7 @@ class BatchInitRequest:
         self.hashValue = None
         self.fileType = None
         self.serverSideValidation = False
+        self.totalParts = None
+
+    def to_json(self):
+        return self.__dict__

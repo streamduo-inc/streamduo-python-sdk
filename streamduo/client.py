@@ -1,6 +1,8 @@
 import os
 
 import requests
+
+from streamduo.api.batch import BatchController
 from streamduo.api.health import HealthController
 from streamduo.api.stream import StreamController
 from streamduo.api.actor import ActorController
@@ -133,6 +135,11 @@ class Client:
             self.set_oauth_token(Client.record_scope)
         return SchemaController(self)
 
+    def get_batch_controller(self):
+        if self.scope != Client.record_scope or self.token is None:
+            self.set_oauth_token(Client.record_scope)
+        return BatchController(self)
+
 
 class PublicClient:
     """
@@ -178,3 +185,4 @@ class PublicClient:
         :return: RecordController
         """
         return RecordController(self)
+
