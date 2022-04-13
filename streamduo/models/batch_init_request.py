@@ -10,7 +10,7 @@ class BatchInitRequest:
          Constructor
          """
         self.fileName = None
-        self.partList = []
+        self.hashes = {}
         self.hashValue = None
         self.fileType = None
         self.serverSideValidation = False

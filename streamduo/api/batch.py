@@ -26,9 +26,7 @@ class BatchController:
                 # update file Hash
                 md5.update(data)
                 # construct part data info
-                part_data = {"partNumber": part_number,
-                             "partHashValue": hashlib.md5(data).hexdigest()}
-                batch_init_request.partList.append(part_data)
+                batch_init_request.hashes[part_number] = hashlib.md5(data).hexdigest()
                 part_number = part_number + 1
 
         batch_init_request.hashValue = md5.hexdigest()
@@ -36,8 +34,41 @@ class BatchController:
         batch_init_request.totalParts = part_number
         return batch_init_request
 
-    def upload_binary(self, stream_id, file_path, BUF_SIZE):
+    def send_batch_init(self, stream_id, file_path, BUF_SIZE):
         request_object = BatchController.construct_batch_init_request(file_path=file_path, BUF_SIZE=BUF_SIZE)
         return self.client.call_api('POST',
                                     f"/stream/{stream_id}/batch/init",
                                     body=request_object.to_json())
+
+    def send_batch_part(self, batch_data, part_number, binary_payload):
+        #Validate Hash
+        #Construct payload
+        #send
+        return self.client.call_api('POST',
+                                    f"/stream/{stream_id}/batch/init",
+                                    body=request_object.to_json())
+
+    @staticmethod
+    def get_part_binary(file_path, part_number, BUF_SIZE):
+        part_counter = 1
+        with open(file_path, 'rb') as out_file:
+            while part_counter < part_number:
+                data = out_file.read(BUF_SIZE)
+                # EOF
+                if not data:
+                    break
+                part_counter = part_counter + 1
+            return data
+
+
+
+    def send_file(self, batch_data, file_path, BUF_SIZE):
+        #loop chunks
+        with open(file_path, 'rb') as out_file:
+            md5 = hashlib.md5()
+            while True:
+                data = out_file.read(BUF_SIZE)
+                if not data:
+                    break
+
+

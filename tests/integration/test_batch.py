@@ -2,6 +2,7 @@ import os
 from unittest import TestCase
 
 from streamduo.client import Client
+from streamduo.models.batch_data import BatchData
 
 
 class TestActor(TestCase):
@@ -19,10 +20,10 @@ class TestActor(TestCase):
         with open(big_file, 'wb') as out_file:
             out_file.write(os.urandom(FILE_SIZE))
 
-        batch_controller.upload_binary(stream_id=new_stream_id, file_path=big_file, BUF_SIZE=BUF_SIZE)
-
-
-
+        resp = batch_controller.send_batch_init(stream_id=new_stream_id, file_path=big_file, BUF_SIZE=BUF_SIZE)
+        print(resp.json())
+        batch_data = BatchData(**resp.json())
+        print(batch_data)
 
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
