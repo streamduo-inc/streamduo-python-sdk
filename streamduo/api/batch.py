@@ -43,16 +43,17 @@ class BatchController:
     def send_batch_part(self, batch_data, part_number, binary_payload):
         #Validate Hash
         #Construct payload
+        file_payload = {'file': binary_payload}
         #send
         return self.client.call_api('POST',
-                                    f"/stream/{stream_id}/batch/init",
-                                    body=request_object.to_json())
+                                    f"/stream/{batch_data.streamId}/batch/{batch_data.batchId}/upload-part/{part_number}",
+                                    files=file_payload)
 
     @staticmethod
     def get_part_binary(file_path, part_number, BUF_SIZE):
         part_counter = 1
         with open(file_path, 'rb') as out_file:
-            while part_counter < part_number:
+            while part_counter <= int(part_number):
                 data = out_file.read(BUF_SIZE)
                 # EOF
                 if not data:
@@ -65,10 +66,10 @@ class BatchController:
     def send_file(self, batch_data, file_path, BUF_SIZE):
         #loop chunks
         with open(file_path, 'rb') as out_file:
-            md5 = hashlib.md5()
-            while True:
-                data = out_file.read(BUF_SIZE)
-                if not data:
-                    break
+            while len(batch_data.outstandingParts.keys()) > 0:
+                part_number = next(iter(batch_data.outstandingParts.items()))[0]
+                data = BatchController.get_part_binary(file_path=file_path, part_number=part_number, BUF_SIZE=BUF_SIZE)
+                #send data
+                batch_data = self.send_batch_part(batch_data=batch_data, part_number=part_number, binary_payload=data)
 
 

@@ -1,3 +1,4 @@
+import hashlib
 import json
 import pprint
 from unittest import TestCase
@@ -16,7 +17,7 @@ class TestJson(TestCase):
             out_file.write(os.urandom(FILE_SIZE))
 
         req = BatchController.construct_batch_init_request(big_file, BUF_SIZE)
-        pprint.pprint(req.to_json())
+        assert len(req.hashes.keys()) == 20
         # cleanup
         os.remove(big_file)
 
@@ -24,13 +25,14 @@ class TestJson(TestCase):
         FILE_SIZE = 1024 * 1024 * 100  # 100 mb
         BUF_SIZE = 1024 * 1024 *5  # 5 MB
         big_file = "unit_test_data/bigfile.dat"
+        PART_NUMBER = '4'
         # multiply file
         with open(big_file, 'wb') as out_file:
             out_file.write(os.urandom(FILE_SIZE))
-        bin_part = BatchController.get_part_binary(file_path=big_file, part_number=4, BUF_SIZE=BUF_SIZE)
+        bin_part = BatchController.get_part_binary(file_path=big_file, part_number=PART_NUMBER, BUF_SIZE=BUF_SIZE)
 
         req = BatchController.construct_batch_init_request(big_file, BUF_SIZE)
-        print(req.partList)
+        assert req.hashes[int(PART_NUMBER)] == hashlib.md5(bin_part).hexdigest()
 
 
 
