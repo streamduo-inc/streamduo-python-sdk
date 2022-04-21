@@ -1,3 +1,4 @@
+from streamduo.models.batch_data import BatchData
 from streamduo.models.batch_init_request import BatchInitRequest
 import hashlib
 import os
@@ -64,13 +65,19 @@ class BatchController:
 
 
 
-    def send_file(self, batch_data, file_path, BUF_SIZE):
+    def send_file(self, stream_id, file_path, BUF_SIZE):
+
+        ## init req
+        batch_data = BatchData(**self.send_batch_init(stream_id=stream_id,
+                                                      file_path=file_path, BUF_SIZE=BUF_SIZE).json())
+
         #loop chunks
         with open(file_path, 'rb') as out_file:
             while len(batch_data.outstandingParts.keys()) > 0:
                 part_number = next(iter(batch_data.outstandingParts.items()))[0]
                 data = BatchController.get_part_binary(file_path=file_path, part_number=part_number, BUF_SIZE=BUF_SIZE)
                 #send data
-                batch_data = self.send_batch_part(batch_data=batch_data, part_number=part_number, binary_payload=data)
-
+                print(f"""sending part: {part_number}""")
+                batch_data = BatchData(**self.send_batch_part(batch_data=batch_data, part_number=part_number, binary_payload=data).json())
+        return batch_data
 
