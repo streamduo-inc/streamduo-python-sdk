@@ -1,6 +1,7 @@
 from streamduo.models.batch_init_request import BatchInitRequest
 import hashlib
 import os
+import base64
 
 class BatchController:
     """
@@ -26,10 +27,10 @@ class BatchController:
                 # update file Hash
                 md5.update(data)
                 # construct part data info
-                batch_init_request.hashes[part_number] = hashlib.md5(data).hexdigest()
+                batch_init_request.hashes[part_number] = base64.b64encode(hashlib.md5(data).digest()).decode()
                 part_number = part_number + 1
 
-        batch_init_request.hashValue = md5.hexdigest()
+        batch_init_request.hashValue = base64.b64encode(md5.digest()).decode()
         batch_init_request.fileName = os.path.basename(file_path)
         batch_init_request.totalParts = part_number
         return batch_init_request
