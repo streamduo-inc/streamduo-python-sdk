@@ -48,5 +48,6 @@ class TestBatch(TestCase):
         batch_data_resp = batch_controller.send_batch_part(batch_data=batch_data, part_number=5, binary_payload=part_bin)
         batch_data_2 = BatchData(**batch_data_resp.json())
         pprint.pprint(batch_data_2.to_json())
+        assert '5' not in batch_data_2.outstandingParts.keys()
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
