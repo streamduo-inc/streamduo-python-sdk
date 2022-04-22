@@ -8,76 +8,87 @@ class BatchController:
     """
     Provides methods for interacting with the `/batch` endpoints
     """
-
+    BUFFER_SIZE = 1024 * 1024 * 5  # 5 MB
     def __init__(self, client):
         self.client = client
 
     @staticmethod
-    def construct_batch_init_request(file_path, BUF_SIZE):
-        # split file
+    def construct_batch_init_request(file_path):
+        """
+        constructs the payload for the initiate batch file upload request
+        :param file_path: (STRING) path to file for upload.
+        :return: (BatchInitRequest) object.
+        """
         # construct request
         batch_init_request = BatchInitRequest()
         part_number = 1
-        # multiply file
+        # break down chunks
         with open(file_path, 'rb') as out_file:
-            md5 = hashlib.md5()
+            full_file_md5 = hashlib.md5()
             while True:
-                data = out_file.read(BUF_SIZE)
+                data = out_file.read(BatchController.BUFFER_SIZE)
                 if not data:
                     break
-                # update file Hash
-                md5.update(data)
-                # construct part data info
-                batch_init_request.hashes[part_number] = base64.b64encode(hashlib.md5(data).digest()).decode()
+                # update full file Hash
+                full_file_md5.update(data)
+                # add part hash as b64 to batch init req
+                batch_init_request.hashes[part_number] = base64.b64encode(
+                    hashlib.md5(data).digest()).decode()
                 part_number = part_number + 1
 
-        batch_init_request.hashValue = base64.b64encode(md5.digest()).decode()
+        batch_init_request.hashValue = base64.b64encode(full_file_md5.digest()).decode()
         batch_init_request.fileName = os.path.basename(file_path)
         batch_init_request.totalParts = part_number
         return batch_init_request
 
-    def send_batch_init(self, stream_id, file_path, BUF_SIZE):
-        request_object = BatchController.construct_batch_init_request(file_path=file_path, BUF_SIZE=BUF_SIZE)
-        return self.client.call_api('POST',
-                                    f"/stream/{stream_id}/batch/init",
-                                    body=request_object.to_json())
-
-    def send_batch_part(self, batch_data, part_number, binary_payload):
-        #Validate Hash
-        #Construct payload
-        file_payload = {'file': binary_payload}
-        #send
-        return self.client.call_api('POST',
-                                    f"/stream/{batch_data.streamId}/batch/{batch_data.batchId}/upload-part/{part_number}",
-                                    files=file_payload)
-
     @staticmethod
-    def get_part_binary(file_path, part_number, BUF_SIZE):
+    def get_part_binary(file_path, part_number):
+        """
+        returns the bytes for a particular "part number" of a file.
+        :param file_path: (STRING) path to file for upload.
+        :param part_number: (INT) part number to return
+        :return: (BYTES) bytes of data corresponding to the file part.
+        """
         part_counter = 1
         with open(file_path, 'rb') as out_file:
             while part_counter <= int(part_number):
-                data = out_file.read(BUF_SIZE)
+                data = out_file.read(BatchController.BUFFER_SIZE)
                 # EOF
                 if not data:
                     break
                 part_counter = part_counter + 1
             return data
 
+    def send_batch_init(self, stream_id, file_path):
+        """
+        Sends a Batch initiation request to the API.
+        :param stream_id: (STRING) Stream ID file will be uploaded to.
+        :param file_path: (STRING) Path to file being uploaded.
+        :return:
+        """
+        request_object = BatchController.construct_batch_init_request(file_path=file_path)
+        return self.client.call_api('POST',
+                                    f"/stream/{stream_id}/batch/init",
+                                    body=request_object.to_json())
 
+    def send_batch_part(self, batch_data, part_number, binary_payload):
+        file_payload = {'file': binary_payload}
+        return self.client.call_api('POST',
+                                    f"/stream/{batch_data.streamId}/batch/{batch_data.batchId}/upload-part/{part_number}",
+                                    files=file_payload)
 
-    def send_file(self, stream_id, file_path, BUF_SIZE):
-
+    def send_file(self, stream_id, file_path):
         ## init req
         batch_data = BatchData(**self.send_batch_init(stream_id=stream_id,
-                                                      file_path=file_path, BUF_SIZE=BUF_SIZE).json())
-
+                                                      file_path=file_path).json())
         #loop chunks
         with open(file_path, 'rb') as out_file:
             while len(batch_data.outstandingParts.keys()) > 0:
                 part_number = next(iter(batch_data.outstandingParts.items()))[0]
-                data = BatchController.get_part_binary(file_path=file_path, part_number=part_number, BUF_SIZE=BUF_SIZE)
+                data = BatchController.get_part_binary(file_path=file_path, part_number=part_number)
                 #send data
                 print(f"""sending part: {part_number}""")
-                batch_data = BatchData(**self.send_batch_part(batch_data=batch_data, part_number=part_number, binary_payload=data).json())
+                batch_data = BatchData(**self.send_batch_part(batch_data=batch_data,
+                                                              part_number=part_number, binary_payload=data).json())
         return batch_data
 
