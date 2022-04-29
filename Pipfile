@@ -6,13 +6,13 @@ name = "pypi"
 [packages]
 requests = "*"
 pandas = "*"
-pylint = "*"
 jsonschema = "*"
-frictionless= "*"
 great_expectations = "*"
+pynacl = "*"
 
 [dev-packages]
 responses = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.9"
