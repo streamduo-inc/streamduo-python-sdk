@@ -21,15 +21,7 @@ class JsonValidator:
     def set_local_schema(self, schema_file):
         try:
             with open(schema_file, 'r') as file:
-                self.schema = json.load(file)
-                print(validators.Draft7Validator.check_schema(self.schema))
-                # integer :: int
-                # number :: float
-                for k, v in self.schema['properties'].items():
-                    if v['type'] == 'integer':
-                        self.int_fields.append(k)
-                    elif v['type'] == 'number':
-                        self.float_fields.append(k)
+                self.set_schema(json.load(file))
         except SyntaxError as error:
             raise
 
