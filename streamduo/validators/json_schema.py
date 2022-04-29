@@ -36,6 +36,13 @@ class JsonValidator:
     def set_schema(self, schema):
         self.schema = schema
         print(validators.Draft7Validator.check_schema(self.schema))
+        # integer :: int
+        # number :: float
+        for k, v in self.schema['properties'].items():
+            if v['type'] == 'integer':
+                self.int_fields.append(k)
+            elif v['type'] == 'number':
+                self.float_fields.append(k)
 
     def validate_record(self, record):
         ## retype numerics
@@ -43,7 +50,7 @@ class JsonValidator:
             record[x] = int(record[x])
         for y in self.float_fields:
             record[y] = float(record[y])
-        return validate(record, self.schema) == None
+        return validate(record, self.schema) is None
 
     def validate_list(self, record_list):
         for r in record_list:
