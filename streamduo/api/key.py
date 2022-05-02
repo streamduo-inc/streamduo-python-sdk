@@ -1,5 +1,5 @@
 from nacl.encoding import Base64Encoder
-from nacl.public import PrivateKey
+from nacl.public import PrivateKey, PublicKey
 
 from streamduo.models.key_pair import KeyPair, KeyEncoding, KeyAlgorithm
 
@@ -21,7 +21,20 @@ class KeyController:
                      publicKeyEncoding=KeyEncoding.BASE64.value)
         return  pk, sk.encode(encoder=Base64Encoder).decode('utf8')
 
+    @staticmethod
+    def get_public_key(key_string: str) -> PublicKey:
+        return PublicKey(public_key=key_string.encode('utf-8'), encoder=Base64Encoder)
+
+    @staticmethod
+    def get_private_key(key_string: str) -> PrivateKey:
+        return PrivateKey(private_key=key_string.encode('utf-8'), encoder=Base64Encoder)
+
     def upload_key(self, stream_id, key):
         return self.client.call_api('POST',
                                     f"/stream/{stream_id}/keys/",
                                     body=key.to_json())
+
+    def set_active_key(self, stream_id, key_id):
+        return self.client.call_api('POST',
+                                    f"/stream/{stream_id}/keys/active",
+                                    body={'keyId': key_id})

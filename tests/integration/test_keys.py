@@ -17,9 +17,15 @@ class TestKeys(TestCase):
 
         pub_key, priv_key = KeyController.create_key()
         key_controller = self.api_client.get_key_controller()
-        key_controller.upload_key(stream_id=new_stream_id, key=pub_key)
+        upload_response = key_controller.upload_key(stream_id=new_stream_id, key=pub_key)
+        key_id = upload_response.json()['publicKeyId']
+        assert key_id is not None
 
-        assert True
+        ## Set Active
+        active_response = key_controller.set_active_key(stream_id=new_stream_id, key_id=key_id)
+        assert active_response.status_code == 200
+        assert self.api_client.get_stream_controller().get_stream(new_stream_id).json()['activeKeyId'] == key_id
+
 
     def test_create_key(self):
         assert True

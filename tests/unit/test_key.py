@@ -1,8 +1,7 @@
-import pprint
+
 from unittest import TestCase
 
-from nacl.encoding import Base64Encoder
-from nacl.public import PublicKey, SealedBox, PrivateKey
+from nacl.public import SealedBox
 
 from streamduo.api.key import KeyController
 
@@ -14,16 +13,14 @@ class TestKey(TestCase):
         assert len(priv) == 44
 
     def test_encr_decr(self):
+        ##Key Object, priv key (string)
         pub, priv = KeyController.create_key()
-        ## Get pub Key Bytes
-        consumer_pk = PublicKey(public_key=pub.publicKey, encoder=Base64Encoder)
-        sb = SealedBox(consumer_pk)
+        sb = SealedBox(KeyController.get_public_key(pub.publicKey))
         with open("../test_data/car_sales.csv", 'rb') as file:
-            enc = sb.encrypt(file.read())
-            print(sb)
-            unseal_box = SealedBox(PrivateKey(private_key=priv.encode('utf-8'), encoder=Base64Encoder))
-            out = unseal_box.decrypt(enc)
-            print(out.decode('utf-8'))
+            encrypted_data = sb.encrypt(file.read())
+        unseal_box = SealedBox(KeyController.get_private_key(priv))
+        out = unseal_box.decrypt(encrypted_data)
+        print(out.decode('utf-8'))
 
 
 
