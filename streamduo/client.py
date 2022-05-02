@@ -4,6 +4,7 @@ import requests
 
 from streamduo.api.batch import BatchController
 from streamduo.api.health import HealthController
+from streamduo.api.key import KeyController
 from streamduo.api.stream import StreamController
 from streamduo.api.actor import ActorController
 from streamduo.api.record import RecordController
@@ -140,6 +141,13 @@ class Client:
             self.set_oauth_token(Client.record_scope)
         return BatchController(self)
 
+    def get_key_controller(self):
+        """
+        Provides a Record Controller to interact with reading/writing streams
+        :return: RecordController
+        """
+        return KeyController(self)
+
 
 class PublicClient:
     """
@@ -185,4 +193,6 @@ class PublicClient:
         :return: RecordController
         """
         return RecordController(self)
+
+
 

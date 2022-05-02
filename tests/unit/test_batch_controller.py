@@ -17,6 +17,7 @@ class TestJson(TestCase):
             out_file.write(os.urandom(FILE_SIZE))
 
         req = BatchController.construct_batch_init_request(big_file)
+        pprint.pprint(req.to_json())
         assert len(req.hashes.keys()) == 20
         # cleanup
         os.remove(big_file)

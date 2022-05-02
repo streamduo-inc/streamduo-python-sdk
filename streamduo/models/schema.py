@@ -7,6 +7,13 @@ class SchemaType(Enum):
     AVRO = 'AVRO'
     GREAT_EXPECTATIONS = 'GREAT_EXPECTATIONS'
 
+
+class FileType(Enum):
+    JSON = 'JSON'
+    AVRO = 'AVRO'
+    CSV = 'CSV'
+
+
 class Schema:
     """
     Class used to aid in the use of schema objects
@@ -20,3 +27,6 @@ class Schema:
 
     def get_schema(self):
         return json.loads(self.schema)
+
+    def get_schema_type(self):
+        return SchemaType[self.schemaType]

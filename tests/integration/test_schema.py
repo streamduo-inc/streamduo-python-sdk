@@ -9,18 +9,20 @@ from streamduo.validators.json_schema import JsonValidator
 from streamduo.models.schema import SchemaType
 
 class TestStream(TestCase):
+    def setUp(self) -> None:
+        self.api_client = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET'))
 
     def test_create_schema(self):
 
         ##create a stream
         display_name = 'test_stream'
-        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_controller = self.api_client.get_stream_controller()
         stream_request_result = stream_controller.create_stream(display_name)
         stream_id = stream_request_result.json()['streamId']
         assert stream_request_result.json()['displayName'] == display_name
 
         ## Add schema to stream
-        schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+        schema_controller = self.api_client.get_schema_controller()
         with open("car_schema.json", 'r') as file:
             car_schema = json.load(file)
         create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
@@ -46,13 +48,13 @@ class TestStream(TestCase):
 
         ##create a stream
         display_name = 'test_stream'
-        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_controller = self.api_client.get_stream_controller()
         stream_request_result = stream_controller.create_stream(display_name)
         stream_id = stream_request_result.json()['streamId']
         assert stream_request_result.json()['displayName'] == display_name
 
         ## Add schema to stream
-        schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+        schema_controller = self.api_client.get_schema_controller()
         with open("car_schema.json", 'r') as file:
             car_schema = json.load(file)
         create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
@@ -97,13 +99,13 @@ class TestStream(TestCase):
     def test_set_active_schema(self):
         ##create a stream
         display_name = 'test_set_active_schema'
-        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_controller = self.api_client.get_stream_controller()
         stream_request_result = stream_controller.create_stream(display_name)
         stream_id = stream_request_result.json()['streamId']
         assert stream_request_result.json()['displayName'] == display_name
 
         ## Add schema to stream
-        schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+        schema_controller = self.api_client.get_schema_controller()
         with open("car_schema.json", 'r') as file:
             car_schema = json.load(file)
         create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
@@ -121,13 +123,13 @@ class TestStream(TestCase):
     def test_set_active_schema_w_record(self):
         ##create a stream
         display_name = 'test_set_active_schema'
-        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_controller = self.api_client.get_stream_controller()
         stream_request_result = stream_controller.create_stream(display_name)
         stream_id = stream_request_result.json()['streamId']
         assert stream_request_result.json()['displayName'] == display_name
 
         ## Add schema to stream
-        schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+        schema_controller = self.api_client.get_schema_controller()
         with open("car_schema.json", 'r') as file:
             car_schema = json.load(file)
         create_schema_response1 = schema_controller.create_schema(stream_id=stream_id,
@@ -143,7 +145,7 @@ class TestStream(TestCase):
         assert updated_stream['activeSchemaId'] == new_schema_id
 
         ## Send good record
-        record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+        record_controller = self.api_client.get_record_controller()
         good_record = {
             "Make": "Nissan",
             "Price": "$9,700.00",

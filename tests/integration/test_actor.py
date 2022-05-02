@@ -6,9 +6,12 @@ from streamduo.client import Client
 
 class TestActor(TestCase):
 
+    def setUp(self) -> None:
+        self.api_client = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET'))
+
     def test_create_machine_client(self):
 
-        actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+        actor_controller = self.api_client.get_actor_controller()
 
         create_actor_response = actor_controller.create_machine_client("client display name test",
                                                                        "client description test")
@@ -25,7 +28,7 @@ class TestActor(TestCase):
 
     def test_list_machine_client(self):
 
-        actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+        actor_controller = self.api_client.get_actor_controller()
         #clear out list
         client_list = actor_controller.get_clients()
         for client in client_list.json():
@@ -58,7 +61,7 @@ class TestActor(TestCase):
     def test_delete_machine_client(self):
         # create stream
         display_name = 'test_stream'
-        stream_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_stream_controller()
+        stream_controller = self.api_client.get_stream_controller()
         new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
         # create client on stream
         client_display_name = 'test_client'
@@ -70,7 +73,7 @@ class TestActor(TestCase):
                 new_client_id = i['actorId']
                 break
         # delete client
-        actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
+        actor_controller = self.api_client.get_actor_controller()
         actor_controller.delete_machine_client(new_client_id)
         # confirm client is null & perm not on stream anymore
         stream_response = stream_controller.get_stream(stream_id=new_stream_id)

@@ -4,11 +4,18 @@ import hashlib
 import os
 import base64
 
+from streamduo.models.schema import SchemaType
+
+from streamduo.models.schema import FileType
+from streamduo.validators.json_schema import JsonValidator
+
+
 class BatchController:
     """
     Provides methods for interacting with the `/batch` endpoints
     """
     BUFFER_SIZE = 1024 * 1024 * 5  # 5 MB
+
     def __init__(self, client):
         self.client = client
 
@@ -38,6 +45,10 @@ class BatchController:
 
         batch_init_request.hashValue = base64.b64encode(full_file_md5.digest()).decode()
         batch_init_request.fileName = os.path.basename(file_path)
+        filename, file_extension = os.path.splitext(file_path)
+        file_extension = file_extension.strip('.').upper()
+        if file_extension in FileType._member_names_:
+            batch_init_request.fileType = FileType[file_extension].value
         batch_init_request.totalParts = part_number
         return batch_init_request
 
@@ -81,14 +92,23 @@ class BatchController:
         ## init req
         batch_data = BatchData(**self.send_batch_init(stream_id=stream_id,
                                                       file_path=file_path).json())
-        #loop chunks
+
+        ## CSV w. JSON Schema
+        if batch_data.requires_validation() \
+                and batch_data.get_file_type() == FileType.CSV \
+                and batch_data.get_stream_schema().get_schema_type() == SchemaType.JSON:
+            ## validate
+            val = JsonValidator()
+            val.set_schema(batch_data.get_stream_schema().get_schema())
+            val.validate_csv(file_path)
+
+        # send via loop chunks
         with open(file_path, 'rb') as out_file:
             while len(batch_data.outstandingParts.keys()) > 0:
                 part_number = next(iter(batch_data.outstandingParts.items()))[0]
                 data = BatchController.get_part_binary(file_path=file_path, part_number=part_number)
-                #send data
+                # send data
                 print(f"""sending part: {part_number}""")
                 batch_data = BatchData(**self.send_batch_part(batch_data=batch_data,
                                                               part_number=part_number, binary_payload=data).json())
         return batch_data
-
