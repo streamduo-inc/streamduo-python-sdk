@@ -119,11 +119,13 @@ class TestBatch(TestCase):
 
         ## Send Bad File
         FILE_SIZE = 1024 * 1024 * 20  # 20MB
-        big_file = "bigfile.dat"
+        big_file = "bigfile.csv"
         # multiply file
-        with open(big_file, 'wb') as out_file:
-            out_file.write(os.urandom(FILE_SIZE))
+        with open(big_file, 'w') as out_file:
+            out_file.write('bad data')
 
+
+        #UnicodeDecodeError, TypeError
         batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path=big_file)
         assert len(batch_data.outstandingParts.keys()) == 0
         ## Cleanup
