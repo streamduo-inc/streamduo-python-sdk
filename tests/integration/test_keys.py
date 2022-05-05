@@ -41,11 +41,10 @@ class TestKeys(TestCase):
         new_key_resp = key_controller.create_key_server(new_stream_id, key_request)
         pprint.pprint(new_key_resp.json())
         priv = new_key_resp.json()['privateKeyValue']
-        pub = new_key_resp.json()['publicKey']
+        pub = new_key_resp.json()['publicKey']['publicKeyValue']
 
         sb = SealedBox(KeyController.get_public_key(pub))
-        with open("../test_data/car_sales.csv", 'rb') as file:
-            encrypted_data = sb.encrypt(file.read())
+        unencrypted_data = b'super secret bytes'
+        encrypted_data = sb.encrypt(unencrypted_data)
         unseal_box = SealedBox(KeyController.get_private_key(priv))
-        out = unseal_box.decrypt(encrypted_data)
-        print(out.decode('utf-8'))
+        assert unseal_box.decrypt(encrypted_data) == unencrypted_data
