@@ -13,7 +13,7 @@ class KeyController:
         self.client = client
 
     @staticmethod
-    def create_key():
+    def create_key_local():
         ## create a secret Key
         sk = PrivateKey.generate()
         pk = KeyPair(publicKey=sk.public_key.encode(encoder=Base64Encoder).decode('utf8'),
@@ -38,3 +38,8 @@ class KeyController:
         return self.client.call_api('POST',
                                     f"/stream/{stream_id}/keys/active",
                                     body={'keyId': key_id})
+
+    def create_key_server(self, stream_id, key_request):
+        return self.client.call_api('POST',
+                                    f"/stream/{stream_id}/keys/generate",
+                                    body=key_request)

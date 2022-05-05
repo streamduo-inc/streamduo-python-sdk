@@ -111,20 +111,10 @@ class TestBatch(TestCase):
         ## Set Active Schema
         schema_controller.set_active_schema(stream_id=new_stream_id, schema_id=new_schema_id)
 
-        ## Send Good File
+        ## Send File
         batch_controller = self.api_client.get_batch_controller()
         batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path="../test_data/car_sales.csv")
         assert len(batch_data.outstandingParts.keys()) == 0
 
-
-        ## Send Bad File
-        FILE_SIZE = 1024 * 1024 * 20  # 20MB
-        big_file = "bigfile.dat"
-        # multiply file
-        with open(big_file, 'wb') as out_file:
-            out_file.write(os.urandom(FILE_SIZE))
-
-        batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path=big_file)
-        assert len(batch_data.outstandingParts.keys()) == 0
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)

@@ -98,4 +98,4 @@ config.json
 .autoenv.zsh
 *.ge_store_backend_id
 tests/unit/store/
-*bigfile.dat
+*bigfile.*
