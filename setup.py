@@ -10,7 +10,7 @@ VERSION = "0.0.28"
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["requests", "jsonschema"]
+REQUIRES = ["requests", "jsonschema", "pynacl", "pandas", "great_expectations"]
 
 setup(
     name=NAME,
