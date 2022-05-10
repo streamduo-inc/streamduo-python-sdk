@@ -1,7 +1,7 @@
 import responses
 from unittest import TestCase
 from responses.matchers import json_params_matcher
-from streamduo.client import Client
+from streamduo import Client
 
 
 class TestActor(TestCase):
