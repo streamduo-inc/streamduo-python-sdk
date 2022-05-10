@@ -1,1 +1,1 @@
-from streamduo.client import Client
+from .client import Client
