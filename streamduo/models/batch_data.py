@@ -1,3 +1,6 @@
+from nacl.public import SealedBox
+
+from streamduo.api.key import KeyController
 from streamduo.models.schema import Schema, FileType
 
 
@@ -8,7 +11,7 @@ class BatchData:
     conforms to the requirements on the API side.
     """
 
-    def __init__(self, batchId, streamId, fileName, hashes, hashValue, outstandingParts, serverSideValidation=None, totalParts=None, fileType=None, streamSchema=None):
+    def __init__(self, batchId, streamId, fileName, hashes, hashValue, outstandingParts, serverSideValidation=None, totalParts=None, fileType=None, streamSchema=None, streamPublicKey=None):
         """
          Constructor
          """
@@ -22,6 +25,7 @@ class BatchData:
         self.serverSideValidation = serverSideValidation
         self.totalParts = totalParts
         self.streamSchema = streamSchema
+        self.streamPublicKey = streamPublicKey
 
     def to_json(self):
         return self.__dict__
@@ -37,3 +41,7 @@ class BatchData:
 
     def requires_validation(self):
         return self.streamSchema is not None
+
+    def requires_encryption(self):
+        return self.streamPublicKey is not None
+
