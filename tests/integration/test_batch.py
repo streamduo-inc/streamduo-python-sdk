@@ -6,8 +6,9 @@ from unittest import TestCase
 from streamduo.client import Client
 from streamduo.models.batch_data import BatchData
 from streamduo.api.batch import BatchController
+from streamduo.models.key_pair import KeyAlgorithm, KeyEncoding
 from streamduo.models.schema import SchemaType
-
+from streamduo.api.key import KeyController
 
 class TestBatch(TestCase):
 
@@ -110,6 +111,43 @@ class TestBatch(TestCase):
 
         ## Set Active Schema
         schema_controller.set_active_schema(stream_id=new_stream_id, schema_id=new_schema_id)
+
+        ## Send File
+        batch_controller = self.api_client.get_batch_controller()
+        batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path="../test_data/car_sales.csv")
+        assert len(batch_data.outstandingParts.keys()) == 0
+
+        ## Cleanup
+        stream_controller.delete_stream(new_stream_id)
+
+    def test_full_file_schema_enc(self):
+        display_name = 'batch_test_stream_full_schema_enc'
+        stream_controller = self.api_client.get_stream_controller()
+        new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
+
+        ## Add schema to stream
+        schema_controller = self.api_client.get_schema_controller()
+        with open("car_schema.json", 'r') as file:
+            car_schema = json.load(file)
+        create_schema_response1 = schema_controller.create_schema(stream_id=new_stream_id,
+                                                                  schema=car_schema, schema_type=SchemaType.JSON)
+        new_schema_id = create_schema_response1.json()['schemaId']
+
+        ## Set Active Schema
+        schema_controller.set_active_schema(stream_id=new_stream_id, schema_id=new_schema_id)
+
+        ## Create Key
+        key_controller = self.api_client.get_key_controller()
+        key_request = {'publicKeyAlgorithm': KeyAlgorithm.CURVE25519.value,
+                       'publicKeyEncoding': KeyEncoding.BASE64.value,
+                       'publicKeyDescription': "test key integration"}
+        new_key_resp = key_controller.create_key_server(stream_id=new_stream_id, key_request=key_request)
+        priv = new_key_resp.json()['privateKeyValue']
+        pub = new_key_resp.json()['publicKey']['publicKeyValue']
+        key_id = new_key_resp.json()['publicKey']['publicKeyId']
+
+        ## set Active
+        key_controller.set_active_key(stream_id=new_stream_id, key_id=key_id)
 
         ## Send File
         batch_controller = self.api_client.get_batch_controller()

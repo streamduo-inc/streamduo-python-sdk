@@ -33,19 +33,6 @@ class RecordController:
                                     body=record.to_json()
                                     )
 
-    def write_csv_records(self, stream_id, file_stream):
-        """
-        Writes a CSV file of records to a stream.
-        :param stream_id: (String) Stream ID to write to
-        :param file_stream: (File) File Object of CSV
-        :return:  (Requests Response) API response, body will be a String detailing the status.
-        """
-        file_payload = {'file': file_stream}
-        return self.client.call_api("POST",
-                                    f"/stream/{stream_id}/record/batch-file",
-                                    files=file_payload
-                                    )
-
     def read_record(self, stream_id, record_id, mark_as_read):
         """
         Reads the latest version of a specific record in a stream by Record ID

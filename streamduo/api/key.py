@@ -70,9 +70,9 @@ class KeyController:
         """
         unseal_box = SealedBox(KeyController.get_private_key(key_string))
         with open(source_file_path, 'rb') as in_file:
-            out = unseal_box.decrypt(in_file)
+            out = unseal_box.decrypt(in_file.read())
         with open(destination_file_path, 'wb') as out_file:
-            out_file.write(out.decode('utf-8'))
+            out_file.write(out)
 
     def upload_key(self, stream_id: str, key: str) -> Response:
         """

@@ -146,6 +146,8 @@ class Client:
         Provides a Record Controller to interact with reading/writing streams
         :return: RecordController
         """
+        if self.scope != Client.record_scope or self.token is None:
+            self.set_oauth_token(Client.record_scope)
         return KeyController(self)
 
 
