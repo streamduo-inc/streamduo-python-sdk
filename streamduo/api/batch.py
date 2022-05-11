@@ -8,7 +8,7 @@ from streamduo.models.schema import SchemaType
 
 from streamduo.models.schema import FileType
 from streamduo.validators.json_schema import JsonValidator
-
+from streamduo.validators.great_expectations_schema import GreatExepectationsValidator
 
 class BatchController:
     """
@@ -101,6 +101,18 @@ class BatchController:
             val = JsonValidator()
             val.set_schema(batch_data.get_stream_schema().get_schema())
             val.validate_csv(file_path)
+
+        ## CSV w. GE Schema
+        if batch_data.requires_validation() \
+                and batch_data.get_file_type() == FileType.CSV \
+                and batch_data.get_stream_schema().get_schema_type() == SchemaType.GREAT_EXPECTATIONS:
+            ## validate
+            val = GreatExepectationsValidator()
+            val.set_schema(batch_data.get_stream_schema().get_schema())
+            val.validate_csv(file_path)
+
+        ## Encryption
+
 
         # send via loop chunks
         with open(file_path, 'rb') as out_file:
