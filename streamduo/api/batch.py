@@ -1,5 +1,7 @@
 import tempfile
 
+from requests import HTTPError
+
 from streamduo.api.key import KeyController
 from streamduo.models.batch_data import BatchData
 from streamduo.models.batch_init_request import BatchInitRequest
@@ -87,7 +89,8 @@ class BatchController:
         :param file_path_override: (STRING) optional overrride for file path
         :return:
         """
-        request_object = BatchController.construct_batch_init_request(file_path=file_path, file_name_override=file_path_override)
+        request_object = BatchController.construct_batch_init_request(file_path=file_path,
+                                                                      file_name_override=file_path_override)
         return self.client.call_api('POST',
                                     f"/stream/{stream_id}/batch/init",
                                     body=request_object.to_json())
@@ -147,3 +150,10 @@ class BatchController:
                 batch_data = BatchData(**self.send_batch_part(batch_data=batch_data,
                                                               part_number=part_number, binary_payload=data).json())
         return batch_data
+
+    def get_part(self, stream_id, batch_id, part_number) -> bytes:
+
+        resp = self.client.call_api('GET',
+                                    f"/stream/{stream_id}/batch/{batch_id}/get-part/{part_number}")
+        return resp.content
+

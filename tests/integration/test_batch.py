@@ -3,6 +3,8 @@ import os
 import pprint
 from unittest import TestCase
 
+from requests import HTTPError
+
 from streamduo.client import Client
 from streamduo.models.batch_data import BatchData
 from streamduo.api.batch import BatchController
@@ -156,3 +158,9 @@ class TestBatch(TestCase):
 
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
+
+    def test_part_get(self):
+        batch_controller = self.api_client.get_batch_controller()
+        r = batch_controller.get_part('08e747e8-85bd-42b7-924e-7ce3aa627c5d', 'af047ac6-8d04-4d45-8cb5-ac5f4b927ac4', 1)
+        assert len(r) > 0
+        self.assertRaises(HTTPError, batch_controller.get_part, 'faker', 'fake', 1)

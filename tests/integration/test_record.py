@@ -1,9 +1,11 @@
 from time import sleep
 from unittest import TestCase
 import os
-from streamduo.client import Client, PublicClient
+
+from requests import HTTPError
+
+from streamduo.client import Client
 import pandas as pd
-import json
 
 class TestRecord(TestCase):
     def test_write_record(self):
@@ -263,7 +265,6 @@ class TestRecord(TestCase):
                                 {'level_2b': 'wayne'}],
                    'level_1b': 'some text'
                    }
-        write_response = record_controller.write_record("madeupsstreamid", payload)
-        assert write_response.status_code == 401
+        self.assertRaises(HTTPError, record_controller.write_record, "madeupsstreamid", payload)
 
 
