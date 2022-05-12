@@ -1,3 +1,6 @@
+import tempfile
+
+from streamduo.api.key import KeyController
 from streamduo.models.batch_data import BatchData
 from streamduo.models.batch_init_request import BatchInitRequest
 import hashlib
@@ -10,6 +13,7 @@ from streamduo.models.schema import FileType
 from streamduo.validators.json_schema import JsonValidator
 from streamduo.validators.great_expectations_schema import GreatExepectationsValidator
 
+
 class BatchController:
     """
     Provides methods for interacting with the `/batch` endpoints
@@ -20,10 +24,11 @@ class BatchController:
         self.client = client
 
     @staticmethod
-    def construct_batch_init_request(file_path):
+    def construct_batch_init_request(file_path, file_name_override=None):
         """
         constructs the payload for the initiate batch file upload request
         :param file_path: (STRING) path to file for upload.
+        :param file_name_override: (STRING) optional override for file name
         :return: (BatchInitRequest) object.
         """
         # construct request
@@ -44,8 +49,12 @@ class BatchController:
                 part_number = part_number + 1
 
         batch_init_request.hashValue = base64.b64encode(full_file_md5.digest()).decode()
-        batch_init_request.fileName = os.path.basename(file_path)
-        filename, file_extension = os.path.splitext(file_path)
+        if file_name_override:
+            file_name_metadata = file_name_override
+        else:
+            file_name_metadata = file_path
+        batch_init_request.fileName = os.path.basename(file_name_metadata)
+        file_name, file_extension = os.path.splitext(file_name_metadata)
         file_extension = file_extension.strip('.').upper()
         if file_extension in FileType._member_names_:
             batch_init_request.fileType = FileType[file_extension].value
@@ -70,14 +79,15 @@ class BatchController:
                 part_counter = part_counter + 1
             return data
 
-    def send_batch_init(self, stream_id, file_path):
+    def send_batch_init(self, stream_id, file_path, file_path_override=None):
         """
         Sends a Batch initiation request to the API.
         :param stream_id: (STRING) Stream ID file will be uploaded to.
         :param file_path: (STRING) Path to file being uploaded.
+        :param file_path_override: (STRING) optional overrride for file path
         :return:
         """
-        request_object = BatchController.construct_batch_init_request(file_path=file_path)
+        request_object = BatchController.construct_batch_init_request(file_path=file_path, file_name_override=file_path_override)
         return self.client.call_api('POST',
                                     f"/stream/{stream_id}/batch/init",
                                     body=request_object.to_json())
@@ -112,8 +122,21 @@ class BatchController:
             val.validate_csv(file_path)
 
         ## Encryption
+        if batch_data.requires_encryption():
+            with tempfile.NamedTemporaryFile() as tmp:
+                KeyController.encrypt_file(key_string=batch_data.get_public_key_value(), source_file_path=file_path,
+                                           destination_file_path=tmp.name)
+                print(tmp.name)
+                ## recreate batch_data with encrypted file hashes
+                batch_data = BatchData(**self.send_batch_init(stream_id=stream_id,
+                                                              file_path=tmp.name,
+                                                              file_path_override=file_path).json())
+                return self.send_chunks(batch_data=batch_data, file_path=tmp.name)
 
+        else:
+            return self.send_chunks(batch_data=batch_data, file_path=file_path)
 
+    def send_chunks(self, batch_data, file_path) -> BatchData:
         # send via loop chunks
         with open(file_path, 'rb') as out_file:
             while len(batch_data.outstandingParts.keys()) > 0:
