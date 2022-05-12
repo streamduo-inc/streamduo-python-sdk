@@ -169,6 +169,7 @@ class TestBatch(TestCase):
         assert filecmp.cmp(original_filepath, dest_filepath)
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
+        os.remove(dest_filepath)
 
     def test_part_get(self):
         batch_controller = self.api_client.get_batch_controller()
