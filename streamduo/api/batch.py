@@ -1,7 +1,5 @@
 import tempfile
 
-from requests import HTTPError
-
 from streamduo.api.key import KeyController
 from streamduo.models.batch_data import BatchData
 from streamduo.models.batch_init_request import BatchInitRequest
@@ -157,3 +155,34 @@ class BatchController:
                                     f"/stream/{stream_id}/batch/{batch_id}/get-part/{part_number}")
         return resp.content
 
+    def get_batch(self, stream_id: str, batch_id: str, destination_filepath: str, decryption_key: str = None):
+        ## get batchdata
+        batch_data = self.get_batch_metadata(stream_id=stream_id, batch_id=batch_id)
+        outstanding_parts = batch_data.hashes.copy()
+        with tempfile.TemporaryDirectory() as td:
+            while len(outstanding_parts.keys()) > 0:
+                part_number = next(iter(outstanding_parts.items()))[0]
+                file_name = os.path.join(td, f"{stream_id}-{batch_id}-{str(part_number)}.part")
+                part_data = self.get_part(stream_id=stream_id, batch_id=batch_id, part_number=part_number)
+                ## validate part download
+                if outstanding_parts[part_number] != base64.b64encode(hashlib.md5(part_data).digest()).decode():
+                    raise ValueError
+                with open(file_name, 'wb') as fh:
+                    fh.write(part_data)
+                del outstanding_parts[part_number]
+            ## Compile final file
+            final_file_tmp = os.path.join(td, f"{stream_id}-{batch_id}.final")
+            with open(final_file_tmp, 'wb') as final_file:
+                for pn in batch_data.hashes.keys():
+                    with open(os.path.join(td, f"{stream_id}-{batch_id}-{str(pn)}.part"), 'rb') as part_file:
+                        final_file.write(part_file.read())
+            if batch_data.requires_encryption():
+                KeyController.decrypt_file(source_file_path=final_file_tmp,
+                                           destination_file_path=destination_filepath,
+                                           key_string=decryption_key)
+            else:
+                os.rename(final_file_tmp, destination_filepath)
+
+    def get_batch_metadata(self, stream_id: str, batch_id: str) -> BatchData:
+        resp = self.client.call_api('GET', f"/stream/{stream_id}/batch/{batch_id}")
+        return BatchData(**resp.json())
