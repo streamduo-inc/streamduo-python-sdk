@@ -170,34 +170,3 @@ class TestBatch(TestCase):
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
         os.remove(dest_filepath)
-
-    def test_part_get(self):
-        batch_controller = self.api_client.get_batch_controller()
-        r = batch_controller.get_part('08e747e8-85bd-42b7-924e-7ce3aa627c5d', 'af047ac6-8d04-4d45-8cb5-ac5f4b927ac4', 1)
-        assert len(r) > 0
-        self.assertRaises(HTTPError, batch_controller.get_part, 'faker', 'fake', 1)
-        batch_controller.get_batch('1a671f1c-0a40-4ffd-ade6-81f7020ca368', 'd3366c53-261f-4bbb-ab87-e17a4e3789a4',
-                                   'out_dec.csv', "X06l2jW5OCyOf5LADEuNcAy95wyaVH5gkW5q5f+MpU8=")
-
-    def test_full_file_schema_enc2(self):
-        display_name = 'batch_test_stream_full_schema_enc'
-        stream_controller = self.api_client.get_stream_controller()
-        new_stream_id = stream_controller.create_stream(display_name).json()['streamId']
-
-        # create batch with no schema
-        batch_controller = self.api_client.get_batch_controller()
-        batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path="../test_data/car_sales.csv")
-        pprint.pprint(batch_data.to_json())
-        ## Add schema to stream
-        schema_controller = self.api_client.get_schema_controller()
-        with open("car_schema.json", 'r') as file:
-            car_schema = json.load(file)
-        create_schema_response1 = schema_controller.create_schema(stream_id=new_stream_id,
-                                                                  schema=car_schema, schema_type=SchemaType.JSON)
-        new_schema_id = create_schema_response1.json()['schemaId']
-
-        ## Set Active Schema
-        schema_controller.set_active_schema(stream_id=new_stream_id, schema_id=new_schema_id)
-        batch_data_2 = batch_controller.send_file(stream_id=new_stream_id, file_path="../test_data/car_sales.csv")
-        meta = batch_controller.get_batch_metadata(stream_id=new_stream_id, batch_id=batch_data_2.batchId)
-        pprint.pprint(meta.to_json())
