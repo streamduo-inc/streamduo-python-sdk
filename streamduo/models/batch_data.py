@@ -33,6 +33,9 @@ class BatchData:
     def get_stream_schema(self):
         return Schema(**self.streamSchema)
 
+    def get_public_key_value(self):
+        return self.streamPublicKey['publicKeyValue']
+
     def get_file_type(self):
         try:
             return FileType[self.fileType]

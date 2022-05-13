@@ -1,6 +1,8 @@
 import os
 from unittest import TestCase
 
+from requests import HTTPError
+
 from streamduo.client import Client
 
 
@@ -22,9 +24,8 @@ class TestActor(TestCase):
         delete_response = actor_controller.delete_machine_client(new_client_id)
         assert delete_response.status_code == 200
 
-        ## check get
-        get_response = actor_controller.get_machine_client(new_client_id)
-        assert get_response.status_code == 404
+        ## check get error
+        self.assertRaises(HTTPError, actor_controller.get_machine_client, new_client_id)
 
     def test_list_machine_client(self):
 
@@ -87,4 +88,4 @@ class TestActor(TestCase):
 
         # cleanup
         stream_controller.delete_stream(new_stream_id)
-        assert actor_controller.get_machine_client(new_client_id).status_code == 404
+        self.assertRaises(HTTPError, actor_controller.get_machine_client, new_client_id)

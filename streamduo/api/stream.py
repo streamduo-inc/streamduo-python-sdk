@@ -1,3 +1,5 @@
+import streamduo.client
+
 class StreamController:
     """
     Class for managing interaction with the /stream endpoints
@@ -35,6 +37,9 @@ class StreamController:
         :param stream_id: (String) Stream ID
         :return: (Requests Response) Response from API call, Body of response is a Stream Object
         """
+        if self.client.scope != streamduo.client.Client.stream_scope:
+            self.client.set_oauth_token(streamduo.client.Client.stream_scope)
+
         return self.client.call_api('DELETE',
                                     f"/stream/{stream_id}")
 
@@ -52,25 +57,6 @@ class StreamController:
                 'isProducer': is_producer,
                 'isConsumer': is_consumer,
                 'actorType': 'CLIENT'
-                }
-        return self.client.call_api('POST',
-                                    f"/stream/{stream_id}/permissions",
-                                    body=body)
-
-    def add_public_client_to_stream(self, stream_id, client_display_name,
-                                         is_producer=False, is_consumer=False):
-        """
-        Creates a new Client ID, and grants that client permissions on a Stream
-        :param stream_id: (String) Stream ID to add the client to
-        :param client_display_name: (String) Desired display name of the client
-        :param is_producer:  (Boolean) Should producer access be granted to this Client
-        :param is_consumer: (Boolean) Should consumer access be granted to this Client
-        :return: (Requests Response) Response from API call, Body of response is a Stream Object
-        """
-        body = {'actorDisplayName': client_display_name,
-                'isProducer': is_producer,
-                'isConsumer': is_consumer,
-                'actorType': 'PUBLIC'
                 }
         return self.client.call_api('POST',
                                     f"/stream/{stream_id}/permissions",

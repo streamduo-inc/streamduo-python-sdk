@@ -35,7 +35,6 @@ class Client:
         else:
             self.api_endpoint = Client.api_endpoint
 
-
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = None
@@ -55,6 +54,7 @@ class Client:
             token_response = requests.post(self.auth_endpoint,
                                            data=self.token_req_payload,
                                            headers=self.auth_req_header)
+            token_response.raise_for_status()
             self.token = token_response.json()['access_token']
 
         except KeyError:
@@ -74,21 +74,22 @@ class Client:
         header = {'authorization': f"Bearer {self.token}",
                   'content-type': 'application/json'}
         if verb == 'GET':
-            return requests.get(f"{self.api_endpoint}{path}",
-                                params=params,
-                                headers=header)
+            response = requests.get(f"{self.api_endpoint}{path}",
+                                    params=params,
+                                    headers=header)
         if verb == 'POST':
             if files:
                 del header['content-type']
-            return requests.post(f"{self.api_endpoint}{path}",
-                                 headers=header,
-                                 files=files,
-                                 json=body)
+            response = requests.post(f"{self.api_endpoint}{path}",
+                                     headers=header,
+                                     files=files,
+                                     json=body)
         if verb == 'DELETE':
-            return requests.delete(f"{self.api_endpoint}{path}",
-                                   headers=header,
-                                   json=body)
-        return None
+            response = requests.delete(f"{self.api_endpoint}{path}",
+                                       headers=header,
+                                       json=body)
+        response.raise_for_status()
+        return response
 
     def get_health_controller(self):
         """
@@ -149,52 +150,3 @@ class Client:
         if self.scope != Client.record_scope or self.token is None:
             self.set_oauth_token(Client.record_scope)
         return KeyController(self)
-
-
-class PublicClient:
-    """
-    The Client Object manages authorization headers for API calls.
-    controllers are generated from this Client Object, and are provided
-    with the authorization support for their methods.
-    """
-    auth_endpoint = "https://streamduo-auth.auth.us-east-1.amazoncognito.com/oauth2/token"
-    api_endpoint = "https://api.streamduo.com"
-
-    def __init__(self):
-        """
-        Constructor for Public Client object.
-        """
-        if os.getenv('STREAMDUO_SDK_URL'):
-            self.api_endpoint = os.getenv('STREAMDUO_SDK_URL')
-        else:
-            self.api_endpoint = Client.api_endpoint
-
-    def call_api(self, verb, path, body=None, files=None):
-        """
-        Generic function to call the SteamDuo APIs.
-        Authorization and headers are managed prior to calling API.
-        :param verb: HTTP Verb (GET, POST, DELETE)
-        :param path: URL path excluding base URL (i.e. /stream)
-        :param body: Body of request if one is used. This can be either a dict, or a JSON formatted String.
-        :param files: A File Object of any file used in the API call.
-        :return: Requests Response Object of the API call.
-        """
-        header = {'content-type': 'application/json'}
-        if verb == 'POST':
-            if files:
-                del header['content-type']
-            return requests.post(f"{self.api_endpoint}/public{path}",
-                                 headers=header,
-                                 files=files,
-                                 json=body)
-        return None
-
-    def get_record_controller(self):
-        """
-        Provides a Record Controller to interact with reading/writing streams
-        :return: RecordController
-        """
-        return RecordController(self)
-
-
-

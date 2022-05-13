@@ -1,7 +1,10 @@
+import filecmp
 import json
 import os
 import pprint
 from unittest import TestCase
+
+from requests import HTTPError
 
 from streamduo.client import Client
 from streamduo.models.batch_data import BatchData
@@ -9,6 +12,7 @@ from streamduo.api.batch import BatchController
 from streamduo.models.key_pair import KeyAlgorithm, KeyEncoding
 from streamduo.models.schema import SchemaType
 from streamduo.api.key import KeyController
+
 
 class TestBatch(TestCase):
 
@@ -150,9 +154,19 @@ class TestBatch(TestCase):
         key_controller.set_active_key(stream_id=new_stream_id, key_id=key_id)
 
         ## Send File
+        original_filepath = "../test_data/car_sales.csv"
         batch_controller = self.api_client.get_batch_controller()
-        batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path="../test_data/car_sales.csv")
+        batch_data = batch_controller.send_file(stream_id=new_stream_id, file_path=original_filepath)
         assert len(batch_data.outstandingParts.keys()) == 0
+        print(f"streamId: {new_stream_id}, Batch ID: {batch_data.batchId}, priv key: {priv}")
 
+        dest_filepath = 'out_dec.csv'
+        batch_controller.get_batch(stream_id=new_stream_id,
+                                   batch_id=batch_data.batchId,
+                                   destination_filepath=dest_filepath,
+                                   decryption_key=priv)
+
+        assert filecmp.cmp(original_filepath, dest_filepath)
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
+        os.remove(dest_filepath)
