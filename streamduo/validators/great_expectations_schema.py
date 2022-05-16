@@ -9,6 +9,7 @@ from great_expectations.data_context.types.base import DataContextConfig, Dataso
     FilesystemStoreBackendDefaults
 from great_expectations.data_context import BaseDataContext
 
+
 class GreatExepectationsValidator:
     context = None
     expectations = None
@@ -23,7 +24,9 @@ class GreatExepectationsValidator:
         with open(file_path, 'r') as file:
             exp_suite = json.load(file)
         self.context.create_expectation_suite(overwrite_existing=True, **exp_suite)
-        print(self.context.list_expectation_suites())
+
+    def set_schema(self, schema):
+        self.context.create_expectation_suite(overwrite_existing=True, **schema)
 
     def validate_csv(self, csv_path):
         run_id = str(uuid.uuid4())
@@ -64,4 +67,3 @@ class GreatExepectationsValidator:
             batch_request=batch_request, expectation_suite_name="test_suite"
         )
         print(validator.head())
-

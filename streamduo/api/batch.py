@@ -127,7 +127,6 @@ class BatchController:
             with tempfile.NamedTemporaryFile() as tmp:
                 KeyController.encrypt_file(key_string=batch_data.get_public_key_value(), source_file_path=file_path,
                                            destination_file_path=tmp.name)
-                print(tmp.name)
                 ## recreate batch_data with encrypted file hashes
                 batch_data = BatchData(**self.send_batch_init(stream_id=stream_id,
                                                               file_path=tmp.name,
@@ -144,7 +143,6 @@ class BatchController:
                 part_number = next(iter(batch_data.outstandingParts.items()))[0]
                 data = BatchController.get_part_binary(file_path=file_path, part_number=part_number)
                 # send data
-                print(f"""sending part: {part_number}""")
                 batch_data = BatchData(**self.send_batch_part(batch_data=batch_data,
                                                               part_number=part_number, binary_payload=data).json())
         return batch_data

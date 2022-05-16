@@ -3,6 +3,7 @@ import json
 from unittest import TestCase
 
 import jsonschema
+from requests import HTTPError
 
 from streamduo.client import Client
 from streamduo.validators.json_schema import JsonValidator
@@ -32,9 +33,9 @@ class TestStream(TestCase):
 
         ## BAD Schema errors out
         car_schema['properties']['Make']['$id'] = "#root/Make 2"
-        create_schema_response2 = schema_controller.create_schema(stream_id=stream_id,
-                                                                  schema=car_schema, schema_type=SchemaType.JSON)
-        assert create_schema_response2.status_code == 400
+
+        ## check get error
+        self.assertRaises(HTTPError, schema_controller.create_schema, stream_id, car_schema, SchemaType.JSON)
 
         ## cleanup schema
         delete_response = schema_controller.delete_schema(schema_id=new_schema_id, stream_id=stream_id)
@@ -163,6 +164,5 @@ class TestStream(TestCase):
             "Colour": "White",
             "Doors": 4
         }
-        bad_write_result = record_controller.write_record(stream_id=stream_id, json_payload=bad_record)
-        assert bad_write_result.status_code == 422
+        self.assertRaises(HTTPError, record_controller.write_record, stream_id, bad_record)
 
