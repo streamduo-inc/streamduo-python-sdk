@@ -15,6 +15,6 @@ class TestGreatExpectations(TestCase):
         validation_results = my_df.validate()
         assert validation_results['success']
 
-        #val = GreatExepectationsValidator()
-        #val.set_expectations("/Users/stevefrensch/dev/streamduo-python-sdk/tests/test_schemas/car_expectations.json")
-        #val.validate_csv(f"{os.getcwd()}/unit_test_data/car_sales.csv")
+        val = GreatExepectationsValidator()
+        val.set_expectations("/Users/stevefrensch/dev/streamduo-python-sdk/tests/test_schemas/car_expectations.json")
+        val.validate_csv(f"{os.getcwd()}/unit_test_data/car_sales.csv")

@@ -8,6 +8,7 @@ from ruamel import yaml
 from great_expectations.data_context.types.base import DataContextConfig, DatasourceConfig, \
     FilesystemStoreBackendDefaults
 from great_expectations.data_context import BaseDataContext
+import warnings
 
 
 class GreatExepectationsValidator:
@@ -43,16 +44,16 @@ class GreatExepectationsValidator:
                 batch_identifiers:
                     - default_identifier_name
             default_inferred_data_connector_name:
-                class_name: InferredAssetFilesystemDataConnector
+                class_name: ConfiguredAssetFilesystemDataConnector
                 base_directory: {csv_path}
-                glob_directive: "*.csv"
-                default_regex:
-                  group_names:
-                    - file_name
-                  pattern: (.*)
+                assets:
+                  csv_dataset:
+                    pattern: (.*)\.csv
+                    group_names:
+                        - primary
         """
         self.context.test_yaml_config(datasource_yaml)
-        self.context.add_datasource(**yaml.load(datasource_yaml))
+        self.context.add_datasource(**yaml.safe_load(datasource_yaml))
         batch_request = RuntimeBatchRequest(
             datasource_name=run_id,
             data_connector_name="default_runtime_data_connector_name",
@@ -66,4 +67,3 @@ class GreatExepectationsValidator:
         validator = self.context.get_validator(
             batch_request=batch_request, expectation_suite_name="test_suite"
         )
-        print(validator.head())
