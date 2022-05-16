@@ -1,5 +1,8 @@
 from unittest import TestCase
 import os
+
+from requests import HTTPError
+
 from streamduo.client import Client
 
 
@@ -32,8 +35,9 @@ class TestStream(TestCase):
         stream_delete_result = stream_controller.delete_stream(new_stream_id)
         assert stream_delete_result.status_code == 204
         ## Assert 404
-        stream_request_result_2 = stream_controller.get_stream(new_stream_id)
-        assert stream_request_result_2.status_code == 404
+        self.assertRaises(HTTPError, stream_controller.get_stream, new_stream_id)
+
+
 
     def test_manage_machine_clients(self):
         display_name = 'test_stream'
@@ -63,7 +67,8 @@ class TestStream(TestCase):
         actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
         actor_controller.delete_machine_client(new_client_id)
         stream_controller.delete_stream(new_stream_id)
-        assert actor_controller.get_machine_client(new_client_id).status_code == 404
+        self.assertRaises(HTTPError, actor_controller.get_machine_client, new_client_id)
+
 
     def test_cannot_delete_owner(self):
         display_name = 'test_stream'
@@ -72,8 +77,7 @@ class TestStream(TestCase):
 
         actor_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_actor_controller()
         user_id = actor_controller.get_user().json()['userId']
-        remove_response = stream_controller.remove_user_from_stream(stream_id=new_stream_id, user_id=user_id)
-        assert remove_response.status_code == 401
+        self.assertRaises(HTTPError, stream_controller.remove_user_from_stream, new_stream_id, user_id)
 
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)

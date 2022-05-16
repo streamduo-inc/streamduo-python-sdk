@@ -170,3 +170,23 @@ class TestBatch(TestCase):
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
         os.remove(dest_filepath)
+
+    def t(self):
+        new_stream_id = ''
+        new_batch_id = ''
+        decryption_private_key_value = ''
+
+        destination_filepath = "./my_downloaded_file.csv"
+        batch_controller = Client(os.getenv('AUTH_CLIENT_ID'),
+                                  os.getenv('AUTH_CLIENT_SECRET')).get_batch_controller()
+        batch_controller.get_batch(stream_id=new_stream_id,
+                                   batch_id=new_batch_id,
+                                   destination_filepath=destination_filepath,
+                                   decryption_key=decryption_private_key_value)
+
+        filepath = "./my_uploaded_file.csv"
+        batch_controller = Client(os.getenv('AUTH_CLIENT_ID'),
+                                  os.getenv('AUTH_CLIENT_SECRET')).get_batch_controller()
+        batch_controller.send_file(stream_id=new_stream_id,
+                                   batch_id=new_batch_id,
+                                   file_path=filepath)
