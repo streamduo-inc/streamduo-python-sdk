@@ -3,6 +3,10 @@ import csv
 from jsonschema import validate, validators
 
 
+class JsonValidationError(Exception):
+    pass
+
+
 def validate_schema(schema):
     return validators.Draft7Validator.check_schema(schema)
 
@@ -27,7 +31,6 @@ class JsonValidator:
 
     def set_schema(self, schema):
         self.schema = schema
-        print(validators.Draft7Validator.check_schema(self.schema))
         # integer :: int
         # number :: float
         for k, v in self.schema['properties'].items():
@@ -37,12 +40,15 @@ class JsonValidator:
                 self.float_fields.append(k)
 
     def validate_record(self, record):
-        ## retype numerics
-        for x in self.int_fields:
-            record[x] = int(record[x])
-        for y in self.float_fields:
-            record[y] = float(record[y])
-        return validate(record, self.schema) is None
+        try:
+            ## retype numerics
+            for x in self.int_fields:
+                record[x] = int(record[x])
+            for y in self.float_fields:
+                record[y] = float(record[y])
+            return validate(record, self.schema) is None
+        except ValueError as e:
+            raise JsonValidationError(e)
 
     def validate_list(self, record_list):
         for r in record_list:
