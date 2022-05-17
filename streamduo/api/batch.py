@@ -185,7 +185,7 @@ class BatchController:
         resp = self.client.call_api('GET', f"/stream/{stream_id}/batch/{batch_id}")
         return BatchData(**resp.json())
 
-    def get_unread_batches(self, stream_id: str) -> BatchData:
+    def get_unread_batches(self, stream_id: str):
         resp = self.client.call_api('GET', f"/stream/{stream_id}/batch/unread")
         return resp.json()
 
