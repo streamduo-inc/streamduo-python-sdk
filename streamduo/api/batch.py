@@ -184,3 +184,11 @@ class BatchController:
     def get_batch_metadata(self, stream_id: str, batch_id: str) -> BatchData:
         resp = self.client.call_api('GET', f"/stream/{stream_id}/batch/{batch_id}")
         return BatchData(**resp.json())
+
+    def get_unread_batches(self, stream_id: str) -> BatchData:
+        resp = self.client.call_api('GET', f"/stream/{stream_id}/batch/unread")
+        return resp.json()
+
+    def mark_batch_read(self, stream_id: str, batch_id: str) -> bool:
+        resp = self.client.call_api('POST', f"/stream/{stream_id}/record/{batch_id}/mark-read")
+        return resp.status_code == 200

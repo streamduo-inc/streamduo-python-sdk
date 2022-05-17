@@ -167,6 +167,20 @@ class TestBatch(TestCase):
                                    decryption_key=priv)
 
         assert filecmp.cmp(original_filepath, dest_filepath)
+
+        ## list unread
+        unread = batch_controller.get_unread_batches(stream_id=new_stream_id)
+        assert len(unread) == 1
+        assert(unread[0]['recordId'] == batch_data.batchId)
+        assert(unread[0]['readStatus'] == 'false')
+
+        ## mark read
+        mark_status = batch_controller.mark_batch_read(stream_id=new_stream_id, batch_id=batch_data.batchId)
+        assert mark_status is True
+
+        unread_update = batch_controller.get_unread_batches(stream_id=new_stream_id)
+        assert len(unread_update) == 0
+
         ## Cleanup
         stream_controller.delete_stream(new_stream_id)
         os.remove(dest_filepath)
