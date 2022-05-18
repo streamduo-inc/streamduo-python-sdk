@@ -3,59 +3,81 @@
 
 This SDK is developed for ease of use with the [StreamDuo](https://streamduo.com) APIs.
 
+StreamDuo is a platform for data transfers, optimized for the structured data that Data Engineers use most. 
+
 For details on the API interface, see the [Swagger Docs](https://api.streamduo.com/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config).
 
 
 ## Examples of the SDK in action
 
-_Easily write records..._
+_Create a data stream..._
 
 ```python
-from streamduo.client import Client
+from streamduo import Client
+client = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET'))
 
-record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
+stream_controller = client.get_stream_controller()
 
-payload = {
-            'Part Description': 'Widget A',
-            'Price': 10.00,
-            'Inventory': 20000
-        }
+stream_request_result = stream_controller.create_stream('my new stream')
 
-write_response = record_controller.write_record(stream_id, payload)
-
-# write_response is the `Record` object of our newly written record...
-record_id = write_response.json()['recordId']
+stream_id = stream_request_result.json()['streamId']
 
 ```
 
-_and read records..._
+_add a data schema and set active..._
 
 ```python
-from streamduo.client import Client
 
-record_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_record_controller()
 
-# read the next 5 unread records
-read_unread_response = record_controller.read_unread_records(stream_id, True, 5)
-
-for record in read_unread_response.json():
-  print(record['recordId'])
-
-```
-
-_upload a schema and set it as active..._
-```python
-## Add schema to stream
-schema_controller = Client(os.getenv('AUTH_CLIENT_ID'), os.getenv('AUTH_CLIENT_SECRET')).get_schema_controller()
+schema_controller = client.get_schema_controller()
 with open("car_schema.json", 'r') as file:
-    car_schema = json.load(file)
-
+            car_schema = json.load(file)
 create_schema_response = schema_controller.create_schema(stream_id=stream_id,
-                                                      schema=car_schema, schema_type=SchemaType.JSON)
-new_schema_id = create_schema_response.json()['schemaId']
+                                                      schema=car_schema, 
+                                                      schema_type=SchemaType.JSON)
+schema_id = create_schema_response.json()['schemaId']
+
 
 ## Set new Schema active
-set_active_response = schema_controller.set_active_schema(stream_id=stream_id, schema_id=new_schema_id)
+set_active_response = schema_controller.set_active_schema(stream_id=stream_id, schema_id=schema_id)
+
+```
+
+_generate an encryption key and set it as active..._
+```python
+key_controller = client.get_key_controller()
+
+key_request = {'publicKeyAlgorithm': KeyAlgorithm.CURVE25519.value,
+           'publicKeyEncoding': KeyEncoding.BASE64.value,
+           'publicKeyDescription': "test key integration"}
+new_key_resp = key_controller.create_key_server(new_stream_id, key_request)
+
+key_id = new_key_resp.json()['publicKey']['publicKeyId']
+private_key = new_key_resp.json()['privateKeyValue']
+public_key = new_key_resp.json()['publicKey']['publicKeyValue']
+
+
+## Set new key active
+set_key_active_response = key_controller.set_active_key(stream_id=stream_id, key_id=key_id)
+```
+
+
+_upload a file, validated and encrypted..._
+```python
+batch_controller = client.get_batch_controller()
+
+batch_data = batch_controller.send_file(stream_id=stream_id, file_path="data.csv")
+batch_id = batch_data.batchId
+```
+
+
+
+_download a file, validated and decrypted..._
+```python
+batch_metadata = batch_controller.get_batch(stream_id=stream_id,
+                       batch_id=batch_id,
+                       destination_filepath="downloaded.csv",
+                       decryption_key=private_key)
 ```
 
 
