@@ -1,14 +1,11 @@
 import os
 import uuid
-import great_expectations as ge
 import json
 from great_expectations.core.batch import RuntimeBatchRequest
-from great_expectations.profile.json_schema_profiler import JsonSchemaProfiler
 from ruamel import yaml
-from great_expectations.data_context.types.base import DataContextConfig, DatasourceConfig, \
+from great_expectations.data_context.types.base import DataContextConfig, \
     FilesystemStoreBackendDefaults
 from great_expectations.data_context import BaseDataContext
-import warnings
 
 
 class GreatExepectationsValidator:
