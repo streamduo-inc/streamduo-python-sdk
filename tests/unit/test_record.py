@@ -1,7 +1,7 @@
 import responses
 from unittest import TestCase
 
-from streamduo.client import Client, PublicClient
+from streamduo.client import Client
 from streamduo.models.read_record_request import ReadRecordRequest
 from streamduo.models.record import Record
 from streamduo.models.record_request import ReadRecordRequestType
