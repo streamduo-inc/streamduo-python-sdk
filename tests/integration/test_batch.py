@@ -4,14 +4,12 @@ import os
 import pprint
 from unittest import TestCase
 
-from requests import HTTPError
-
 from streamduo.client import Client
 from streamduo.models.batch_data import BatchData
 from streamduo.api.batch import BatchController
 from streamduo.models.key_pair import KeyAlgorithm, KeyEncoding
 from streamduo.models.schema import SchemaType
-from streamduo.api.key import KeyController
+
 
 
 class TestBatch(TestCase):
