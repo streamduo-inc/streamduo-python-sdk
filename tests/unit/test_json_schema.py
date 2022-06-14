@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import jsonschema
+from jsonschema import SchemaError
 
 from streamduo.validators.json_schema import JsonValidator, JsonValidationError
 
@@ -50,7 +51,7 @@ class TestJson(TestCase):
 
     def test_bad_schema(self):
         val = JsonValidator()
-        with self.assertRaises(jsonschema.exceptions.SchemaError):
+        with self.assertRaises(SchemaError):
             val.set_schema("asdf")
 
     def test_csv_validation(self):

@@ -30,6 +30,7 @@ class JsonValidator:
             raise
 
     def set_schema(self, schema):
+        validate_schema(schema)
         self.schema = schema
         # integer :: int
         # number :: float
