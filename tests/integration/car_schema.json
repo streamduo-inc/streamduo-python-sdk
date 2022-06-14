@@ -20,7 +20,7 @@
 			"examples": [
 				"Nissan"
 			],
-			"pattern": "^.*$"
+			"pattern": "^.*$":q!
 		},
 		"Price": {
 			"$id": "#root/Price",

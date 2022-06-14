@@ -104,7 +104,6 @@ class Client:
         """
         Provides a Stream controller to access /stream endpoints
         :return: StreamController
-        :return:
         """
         if self.scope != Client.stream_scope or self.token is None:
             self.set_oauth_token(Client.stream_scope)

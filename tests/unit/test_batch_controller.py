@@ -1,6 +1,5 @@
 import base64
 import hashlib
-import json
 import pprint
 from unittest import TestCase
 from streamduo.api.batch import BatchController
@@ -21,6 +20,10 @@ class TestJson(TestCase):
         assert len(req.hashes.keys()) == 20
         # cleanup
         os.remove(big_file)
+
+    def test_construct_init_dne(self):
+        big_file = "madeupfile.dat"
+        self.assertRaises(FileNotFoundError, BatchController.construct_batch_init_request, "madeupfile.dat")
 
     def test_get_part_binary(self):
         FILE_SIZE = 1024 * 1024 * 100  # 100 mb
